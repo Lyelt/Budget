@@ -8,6 +8,30 @@
         mc:Ignorable="d"
         Title="Budget" Height="600" Width="800">
     <Grid>
+        <TabControl HorizontalAlignment="Left" Height="100" Margin="72,34,0,0" VerticalAlignment="Top" Width="605">
+            <TabItem Header="Spending&#xD;&#xA;" HorizontalAlignment="Left" Height="39" VerticalAlignment="Top" Width="132" Margin="0,0,-27,0">
+                <Grid Background="White" Margin="0,0,0,-400">
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="Budget Setup&#xD;&#xA;" HorizontalAlignment="Left" Height="39" VerticalAlignment="Top" Width="184" Margin="253,0,-253,0">
+                <Grid Background="White" Margin="10,-1,-10,-386">
+                    <TextBox HorizontalAlignment="Left" Height="23" Margin="34,69,0,0" TextWrapping="Wrap" Text="New Budget" VerticalAlignment="Top" Width="120"/>
+                    <Button Content="Add&#xD;&#xA;" HorizontalAlignment="Left" Margin="154,69,0,0" VerticalAlignment="Top" Width="41" Height="26" Background="AliceBlue"/>
+                    <ComboBox HorizontalAlignment="Left" 
+                              Margin="34,38,0,0" 
+                              VerticalAlignment="Top" 
+                              Width="120" 
+                              RenderTransformOrigin="-0.345,0.078" 
+                              ItemsSource="{Binding Path=}"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Reports&#xD;&#xA;" HorizontalAlignment="Left" Height="39" VerticalAlignment="Top" Width="105" Margin="-127,0,0,0">
+                <Grid Background="White" Margin="0,0,0,-375">
+
+                </Grid>
+            </TabItem>
+        </TabControl>
 
     </Grid>
 </Controls:MetroWindow>

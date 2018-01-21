@@ -18,7 +18,7 @@ namespace BudgetingTool
         /// List of the main categories of expenses
         /// E.g. "Car", "Entertainment", "Shopping"...
         /// </summary>
-        public List<BudgetCategory> ExpenseCategories { get; set; }
+        public List<ExpenseCategory> ExpenseCategories { get; set; }
 
         /// <summary>
         /// List of income sources
@@ -31,7 +31,7 @@ namespace BudgetingTool
         /// </summary>
         public Budget()
         {
-            ExpenseCategories = new List<BudgetCategory>();
+            ExpenseCategories = new List<ExpenseCategory>();
             IncomeSources = new List<Income>();
             Name = "New Budget";
         }

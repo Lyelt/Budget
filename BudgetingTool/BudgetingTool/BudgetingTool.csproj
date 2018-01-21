@@ -63,6 +63,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="XmlHelper.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -72,7 +73,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Budget.cs" />
-    <Compile Include="BudgetCategory.cs" />
+    <Compile Include="BudgetList.cs" />
+    <Compile Include="ExpenseCategory.cs" />
     <Compile Include="BudgetItem.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

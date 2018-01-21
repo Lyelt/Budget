@@ -7,7 +7,7 @@ using System.Windows.Media;
 
 namespace BudgetingTool
 {
-    public class BudgetCategory
+    public class ExpenseCategory
     {
         /// <summary>
         /// Category name
