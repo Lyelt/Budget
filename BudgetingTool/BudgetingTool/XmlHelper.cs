@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Drawing;
 
 namespace BudgetingTool
 {
@@ -22,6 +23,8 @@ namespace BudgetingTool
         private const string XML_COLOR = "color";
         private const string XML_EXPENSE_CAT = "expenseCat";
 
+        //=====================================================
+        //=====================================================
         #region Writer
         /// <summary>
         /// Writes a list of budgets to an xml writer
@@ -99,15 +102,14 @@ namespace BudgetingTool
             writer.WriteEndElement();
         }
         #endregion
+
         //=====================================================
-        //=                                                   =
-        //=                                                   =
         //=====================================================
         #region Reader
         public static List<Budget> ReadBudgets(XmlReader reader)
         {
             List<Budget> budgets = new List<Budget>();
-            reader.MoveToContent();
+
             while (reader.Read())
             {
                 if (reader.NodeType == XmlNodeType.Element && reader.Name == XML_BUDGET)
@@ -148,24 +150,95 @@ namespace BudgetingTool
             List<ExpenseCategory> categories = new List<ExpenseCategory>();
             while (reader.Read())
             {
+                if (reader.NodeType == XmlNodeType.EndElement && reader.Name == XML_EXPENSES)
+                    break;
 
+                if (reader.Name == XML_EXPENSE_CAT)
+                    categories.Add(ReadExpenseCategory(reader));
             }
             return categories;
         }
 
-        private static Expense ReadExpense(XmlReader reader)
+        private static ExpenseCategory ReadExpenseCategory(XmlReader reader)
         {
+            ExpenseCategory cat = new ExpenseCategory();
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.EndElement && reader.Name == XML_EXPENSE_CAT)
+                    break;
 
+                switch (reader.Name)
+                {
+                    case XML_COLOR:
+                        cat.Color = Color.FromName(reader.Name);
+                        break;
+                    case XML_EXPENSES:
+                        cat.Expenses = ReadExpenses(reader);
+                        break;
+                    case XML_NAME:
+                        cat.Name = reader.Name;
+                        break;
+                }
+            }
+            return cat;
+        }
+
+        private static List<Expense> ReadExpenses(XmlReader reader)
+        {
+            List<Expense> expenses = new List<Expense>();
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.EndElement && reader.Name == XML_EXPENSES)
+                    break;
+
+                if (reader.Name == XML_EXPENSES)
+                {
+                    expenses.Add((Expense)ReadIncomeOrExpense(reader, new Expense()));
+                }
+            }
+            return expenses;
+        }
+
+        private static BudgetItem ReadIncomeOrExpense(XmlReader reader, BudgetItem item)
+        {
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.EndElement && (reader.Name == XML_EXPENSE || reader.Name == XML_INCOME))
+                    break;
+
+                switch (reader.Name)
+                {
+                    case XML_NAME:
+                        item.Name = reader.Value;
+                        break;
+                    case XML_ANNUAL:
+                        item.Annual = double.Parse(reader.Value);
+                        break;
+                    case XML_MONTHLY:
+                        item.Monthly = double.Parse(reader.Value);
+                        break;
+                    case XML_WEEKLY:
+                        item.Weekly = double.Parse(reader.Value);
+                        break;
+                }
+            }
+            return item;
         }
 
         private static List<Income> ReadIncomes(XmlReader reader)
         {
+            List<Income> incomes = new List<Income>();
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.EndElement && reader.Name == XML_INCOMES)
+                    break;
 
-        }
-
-        private static Income ReadIncome(XmlReader reader)
-        {
-
+                if (reader.Name == XML_INCOMES)
+                {
+                    incomes.Add((Income)ReadIncomeOrExpense(reader, new Income()));
+                }
+            }
+            return incomes;
         }
         #endregion
     }

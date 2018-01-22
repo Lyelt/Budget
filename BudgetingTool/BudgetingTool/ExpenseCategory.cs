@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media;
+using System.Drawing;
 
 namespace BudgetingTool
 {
@@ -18,7 +18,7 @@ namespace BudgetingTool
         /// <summary>
         /// Color for graphs and stuff
         /// </summary>
-        public Color Color { get; set; }
+        public System.Drawing.Color Color { get; set; }
 
         /// <summary>
         /// Actual expenses contained within the category

@@ -8,26 +8,32 @@
         mc:Ignorable="d"
         Title="Budget" Height="600" Width="800">
     <Grid>
-        <TabControl HorizontalAlignment="Left" Height="100" Margin="72,34,0,0" VerticalAlignment="Top" Width="605">
+        <TabControl HorizontalAlignment="Left" Height="525" Margin="72,34,0,0" VerticalAlignment="Top" Width="605">
             <TabItem Header="Spending&#xD;&#xA;" HorizontalAlignment="Left" Height="39" VerticalAlignment="Top" Width="132" Margin="0,0,-27,0">
-                <Grid Background="White" Margin="0,0,0,-400">
+                <Grid Background="White" Margin="0,0,0,20">
 
                 </Grid>
             </TabItem>
-            <TabItem Header="Budget Setup&#xD;&#xA;" HorizontalAlignment="Left" Height="39" VerticalAlignment="Top" Width="184" Margin="253,0,-253,0">
-                <Grid Background="White" Margin="10,-1,-10,-386">
-                    <TextBox HorizontalAlignment="Left" Height="23" Margin="34,69,0,0" TextWrapping="Wrap" Text="New Budget" VerticalAlignment="Top" Width="120"/>
-                    <Button Content="Add&#xD;&#xA;" HorizontalAlignment="Left" Margin="154,69,0,0" VerticalAlignment="Top" Width="41" Height="26" Background="AliceBlue"/>
+            <TabItem Header="Budget Setup&#xD;&#xA;" HorizontalAlignment="Left" Height="39" VerticalAlignment="Top" Width="184" Margin="289,0,-289,0">
+                <Grid Background="White" Margin="10,-1,-10,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="451*"/>
+                        <ColumnDefinition Width="148*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Name="NewBudgetBox" HorizontalAlignment="Left" Height="23" Margin="34,69,0,0" TextWrapping="Wrap" Text="New Budget" VerticalAlignment="Top" Width="120"/>
+                    <Button Content="Add" HorizontalAlignment="Left" Margin="154,69,0,0" VerticalAlignment="Top" Width="41" Height="26"
+                            Click="AddBudget"/>
                     <ComboBox HorizontalAlignment="Left" 
                               Margin="34,38,0,0" 
                               VerticalAlignment="Top" 
                               Width="120" 
                               RenderTransformOrigin="-0.345,0.078" 
-                              ItemsSource="{Binding Path=}"/>
+                              ItemsSource="{Binding Path=Budgets}"
+                              DisplayMemberPath="Name"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Reports&#xD;&#xA;" HorizontalAlignment="Left" Height="39" VerticalAlignment="Top" Width="105" Margin="-127,0,0,0">
-                <Grid Background="White" Margin="0,0,0,-375">
+            <TabItem Header="Reports&#xD;&#xA;" HorizontalAlignment="Left" Height="39" VerticalAlignment="Top" Width="104" Margin="-83,0,0,0">
+                <Grid Background="White" Margin="0,0,0,6">
 
                 </Grid>
             </TabItem>

@@ -26,7 +26,6 @@ namespace BudgetingTool
             private set
             {
                 _budgets = value;
-                SaveBudgets();
             }
         }
 
@@ -44,6 +43,12 @@ namespace BudgetingTool
         public void AddBudget(Budget budget)
         {
             Budgets.Add(budget);
+            SaveBudgets();
+        }
+
+        public void SetPath(string path)
+        {
+            _xmlFilePath = path;
         }
 
         // Make sure we update the XML file
@@ -70,7 +75,7 @@ namespace BudgetingTool
                 using (XmlReader reader = XmlReader.Create(GetStream()))
                 {
                     Budgets = XmlHelper.ReadBudgets(reader);
-                }  
+                }
             }
             catch (Exception ex)
             {
