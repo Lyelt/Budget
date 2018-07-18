@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Drawing;
+using System.Xml.Linq;
 
 namespace BudgetingTool
 {
@@ -109,7 +110,7 @@ namespace BudgetingTool
         public static List<Budget> ReadBudgets(XmlReader reader)
         {
             List<Budget> budgets = new List<Budget>();
-
+            reader.MoveToContent();
             while (reader.Read())
             {
                 if (reader.NodeType == XmlNodeType.Element && reader.Name == XML_BUDGET)
@@ -132,6 +133,7 @@ namespace BudgetingTool
                 switch(reader.Name)
                 {
                     case XML_NAME:
+                        reader.Read();
                         budget.Name = reader.Value;
                         break;
                     case XML_EXPENSE_CAT:
@@ -170,13 +172,15 @@ namespace BudgetingTool
                 switch (reader.Name)
                 {
                     case XML_COLOR:
-                        cat.Color = Color.FromName(reader.Name);
+                        reader.Read();
+                        cat.Color = Color.FromName(reader.Value);
                         break;
                     case XML_EXPENSES:
                         cat.Expenses = ReadExpenses(reader);
                         break;
                     case XML_NAME:
-                        cat.Name = reader.Name;
+                        reader.Read();
+                        cat.Name = reader.Value;
                         break;
                 }
             }
@@ -209,15 +213,19 @@ namespace BudgetingTool
                 switch (reader.Name)
                 {
                     case XML_NAME:
+                        reader.Read();
                         item.Name = reader.Value;
                         break;
                     case XML_ANNUAL:
+                        reader.Read();
                         item.Annual = double.Parse(reader.Value);
                         break;
                     case XML_MONTHLY:
+                        reader.Read();
                         item.Monthly = double.Parse(reader.Value);
                         break;
                     case XML_WEEKLY:
+                        reader.Read();
                         item.Weekly = double.Parse(reader.Value);
                         break;
                 }

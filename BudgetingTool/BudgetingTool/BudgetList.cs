@@ -10,7 +10,7 @@ using System.Xml.Linq;
 
 namespace BudgetingTool
 {
-    public class BudgetList
+    public class Budgets
     {
         private const string DEFAULT_XML = "Budgets.xml";
 
@@ -33,7 +33,7 @@ namespace BudgetingTool
         /// Create a new list of budgets
         /// </summary>
         /// <param name="path">Path of XML file to create from. Creates an empty list by default.</param>
-        public BudgetList(string path = "")
+        public Budgets(string path = "")
         {
             _budgets = new List<Budget>();
             _xmlFilePath = path;
@@ -88,7 +88,7 @@ namespace BudgetingTool
             if (string.IsNullOrEmpty(_xmlFilePath))
                 _xmlFilePath = DEFAULT_XML;
 
-            return File.Create(_xmlFilePath);
+            return File.Open(_xmlFilePath, FileMode.OpenOrCreate);
         }
     }
 }

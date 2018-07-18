@@ -33,16 +33,7 @@ namespace BudgetingTool
         {
             ExpenseCategories = new List<ExpenseCategory>();
             IncomeSources = new List<Income>();
-            Name = "New Budget";
-        }
-
-        /// <summary>
-        /// Create a budget from an existing XML file
-        /// </summary>
-        /// <param name="path">Path to the XML budget file</param>
-        public Budget(string path)
-        {
-
+            Name = "";
         }
     }
 }

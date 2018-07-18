@@ -21,19 +21,21 @@ namespace BudgetingTool
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        public BudgetList Budgets { get; set; }
+        public Budgets Budgets { get; set; }
 
         public MainWindow()
         {
             InitializeComponent();
-            Budgets = new BudgetList();
+            Budgets = new Budgets();
         }
 
         private void AddBudget(object sender, RoutedEventArgs e)
         {
-            Budget budget = new BudgetingTool.Budget();
+            Budget budget = new Budget();
             budget.Name = NewBudgetBox.Text;
             Budgets.AddBudget(budget);
+
+            NewBudgetBox.Clear();
         }
     }
 }
