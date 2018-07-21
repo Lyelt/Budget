@@ -59,14 +59,14 @@ namespace BudgetingForm
             return categories;
         }
 
-        public List<Expense> GetExpenses(Budget b, ExpenseCategory c)
+        public List<Expense> GetExpenses(Budget b, string categoryName)
         {
             List<Expense> expenses = new List<Expense>();
 
             try
             {
                 using (var dbc = DatabaseHelper.GetConnector())
-                using (var cmd = dbc.BuildStoredProcedureCommand("spGetExpensesForBudgetAndCategory", "@budgetId", b.Id, "@expenseCategoryId", c.Id))
+                using (var cmd = dbc.BuildStoredProcedureCommand("spGetExpensesForBudgetAndCategory", "@budgetId", b.Id, "@expenseCategoryName", categoryName))
                 using (var rdr = cmd.ExecuteReader())
                 {
                     while (rdr.Read())
@@ -99,7 +99,7 @@ namespace BudgetingForm
             try
             {
                 using (var dbc = DatabaseHelper.GetConnector())
-                using (var cmd = dbc.BuildStoredProcedureCommand("spGetIncomeForBudget", "@budgetId", b.Id))
+                using (var cmd = dbc.BuildStoredProcedureCommand("spGetIncomesForBudget", "@budgetId", b.Id))
                 using (var rdr = cmd.ExecuteReader())
                 {
                     while (rdr.Read())

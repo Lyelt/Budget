@@ -60,7 +60,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_Open = new System.Windows.Forms.ToolStripMenuItem();
-            this.newBudgetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_NewBudget = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.TextBox_CreateBudget = new System.Windows.Forms.ToolStripTextBox();
             this.TabControl_Main.SuspendLayout();
@@ -242,11 +242,12 @@
             // ComboBox_IncomeSources
             // 
             this.ComboBox_IncomeSources.FormattingEnabled = true;
-            this.ComboBox_IncomeSources.Location = new System.Drawing.Point(76, 16);
+            this.ComboBox_IncomeSources.Location = new System.Drawing.Point(6, 7);
             this.ComboBox_IncomeSources.Name = "ComboBox_IncomeSources";
             this.ComboBox_IncomeSources.Size = new System.Drawing.Size(182, 21);
             this.ComboBox_IncomeSources.TabIndex = 0;
-            this.ComboBox_IncomeSources.Text = "Select or create income source...";
+            this.ComboBox_IncomeSources.Text = "Select income source...";
+            this.ComboBox_IncomeSources.SelectedIndexChanged += new System.EventHandler(this.ComboBox_IncomeSources_SelectedIndexChanged);
             // 
             // ListBox_ExpenseCategories
             // 
@@ -255,6 +256,7 @@
             this.ListBox_ExpenseCategories.Name = "ListBox_ExpenseCategories";
             this.ListBox_ExpenseCategories.Size = new System.Drawing.Size(120, 173);
             this.ListBox_ExpenseCategories.TabIndex = 0;
+            this.ListBox_ExpenseCategories.SelectedIndexChanged += new System.EventHandler(this.ListBox_ExpenseCategories_SelectedIndexChanged);
             // 
             // ListBox_Expenses
             // 
@@ -263,6 +265,7 @@
             this.ListBox_Expenses.Name = "ListBox_Expenses";
             this.ListBox_Expenses.Size = new System.Drawing.Size(120, 173);
             this.ListBox_Expenses.TabIndex = 1;
+            this.ListBox_Expenses.SelectedIndexChanged += new System.EventHandler(this.ListBox_Expenses_SelectedIndexChanged);
             // 
             // Button_AddIncomeOrExpense
             // 
@@ -272,8 +275,9 @@
             this.Button_AddIncomeOrExpense.Name = "Button_AddIncomeOrExpense";
             this.Button_AddIncomeOrExpense.Size = new System.Drawing.Size(105, 23);
             this.Button_AddIncomeOrExpense.TabIndex = 15;
-            this.Button_AddIncomeOrExpense.Text = "Add To My Budget";
+            this.Button_AddIncomeOrExpense.Text = "Confirm";
             this.Button_AddIncomeOrExpense.UseVisualStyleBackColor = true;
+            this.Button_AddIncomeOrExpense.Click += new System.EventHandler(this.Button_AddIncomeOrExpense_Click);
             // 
             // label9
             // 
@@ -362,7 +366,7 @@
             this.Panel_ManageIncome.Controls.Add(this.ComboBox_IncomeSources);
             this.Panel_ManageIncome.Location = new System.Drawing.Point(15, 30);
             this.Panel_ManageIncome.Name = "Panel_ManageIncome";
-            this.Panel_ManageIncome.Size = new System.Drawing.Size(327, 51);
+            this.Panel_ManageIncome.Size = new System.Drawing.Size(327, 78);
             this.Panel_ManageIncome.TabIndex = 19;
             this.Panel_ManageIncome.Visible = false;
             // 
@@ -387,20 +391,20 @@
             // MenuItem_Open
             // 
             this.MenuItem_Open.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newBudgetToolStripMenuItem,
+            this.MenuItem_NewBudget,
             this.toolStripSeparator1});
             this.MenuItem_Open.Name = "MenuItem_Open";
             this.MenuItem_Open.Size = new System.Drawing.Size(180, 22);
             this.MenuItem_Open.Text = "Open";
             this.MenuItem_Open.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.MenuItem_Open_DropDownItemClicked);
             // 
-            // newBudgetToolStripMenuItem
+            // MenuItem_NewBudget
             // 
-            this.newBudgetToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuItem_NewBudget.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.TextBox_CreateBudget});
-            this.newBudgetToolStripMenuItem.Name = "newBudgetToolStripMenuItem";
-            this.newBudgetToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.newBudgetToolStripMenuItem.Text = "New Budget";
+            this.MenuItem_NewBudget.Name = "MenuItem_NewBudget";
+            this.MenuItem_NewBudget.Size = new System.Drawing.Size(180, 22);
+            this.MenuItem_NewBudget.Text = "New Budget";
             // 
             // toolStripSeparator1
             // 
@@ -479,7 +483,7 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_Open;
-        private System.Windows.Forms.ToolStripMenuItem newBudgetToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem MenuItem_NewBudget;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripTextBox TextBox_CreateBudget;
     }
