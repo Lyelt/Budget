@@ -12,10 +12,16 @@ namespace BudgetingForm
 
         public string Name { get; }
 
-        public Budget(int id, string name)
+        public IEnumerable<Expense> Expenses { get; }
+
+        public IEnumerable<Income> Incomes { get; }
+
+        public Budget(int id, string name, IEnumerable<Expense> expenses, IEnumerable<Income> incomes)
         {
-            Name = name ?? throw new ArgumentNullException(name, $"Budget must have a name. Id: {id}");
             Id = id;
+            Name = name ?? throw new ArgumentNullException(nameof(name), $"Budget must have a name. Id: {id}");
+            Expenses = expenses ?? throw new ArgumentNullException(nameof(expenses), $"Budget must have expense specified. Id: {id}");
+            Incomes = incomes ?? throw new ArgumentNullException(nameof(incomes), $"Budget must have income specified. Id: {id}");
         }
 
         public override bool Equals(object obj)

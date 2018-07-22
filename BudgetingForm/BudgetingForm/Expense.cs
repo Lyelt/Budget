@@ -11,6 +11,8 @@ namespace BudgetingForm
     {
         public int Id { get;  }
 
+        public int ExpenseCategoryId { get; }
+
         public string ExpenseName { get; }
 
         public double Weekly { get; }
@@ -19,9 +21,10 @@ namespace BudgetingForm
 
         public double Yearly { get; }
 
-        public Expense(int id, string name, double weekly, double monthly, double yearly)
+        public Expense(int id, int catId, string name, double weekly, double monthly, double yearly)
         {
             Id = id;
+            ExpenseCategoryId = catId;
             ExpenseName = name;
             Weekly = weekly;
             Monthly = monthly;
@@ -31,11 +34,12 @@ namespace BudgetingForm
         public static Expense Create(System.Data.SqlClient.SqlDataReader rdr)
         {
             var id = rdr.GetInt("ExpenseId");
+            var catid = rdr.GetInt("ExpenseCategoryId");
             var name = rdr.GetString("ExpenseName");
             var weekly = rdr.GetDouble("Weekly");
             var monthly = rdr.GetDouble("Monthly");
             var yearly = rdr.GetDouble("Yearly");
-            return new Expense(id, name, weekly, monthly, yearly);
+            return new Expense(id, catid, name, weekly, monthly, yearly);
         }
     }
 }

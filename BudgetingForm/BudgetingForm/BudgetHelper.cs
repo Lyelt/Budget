@@ -22,7 +22,7 @@ namespace BudgetingForm
             _log = LogManager.GetLogger<BudgetHelper>();
             _log.AddLogWriter(new LogFileWriter("BudgetHelperWriter", "logs"));
 
-            LoadBudgets();
+            ReloadBudgets();
         }
 
         public List<ExpenseCategory> GetExpenseCategories()
@@ -59,14 +59,14 @@ namespace BudgetingForm
             return categories;
         }
 
-        public List<Expense> GetExpenses(Budget b, string categoryName)
+        public List<Expense> GetExpenses(int id, string categoryName = "")
         {
             List<Expense> expenses = new List<Expense>();
 
             try
             {
                 using (var dbc = DatabaseHelper.GetConnector())
-                using (var cmd = dbc.BuildStoredProcedureCommand("spGetExpensesForBudgetAndCategory", "@budgetId", b.Id, "@expenseCategoryName", categoryName))
+                using (var cmd = dbc.BuildStoredProcedureCommand("spGetExpensesForBudgetAndCategory", "@budgetId", id, "@expenseCategoryName", categoryName))
                 using (var rdr = cmd.ExecuteReader())
                 {
                     while (rdr.Read())
@@ -92,14 +92,14 @@ namespace BudgetingForm
             return expenses;
         }
 
-        public List<Income> GetIncome(Budget b)
+        public List<Income> GetIncome(int id)
         {
             List<Income> incomes = new List<Income>();
 
             try
             {
                 using (var dbc = DatabaseHelper.GetConnector())
-                using (var cmd = dbc.BuildStoredProcedureCommand("spGetIncomesForBudget", "@budgetId", b.Id))
+                using (var cmd = dbc.BuildStoredProcedureCommand("spGetIncomesForBudget", "@budgetId", id))
                 using (var rdr = cmd.ExecuteReader())
                 {
                     while (rdr.Read())
@@ -141,10 +141,12 @@ namespace BudgetingForm
             return budget;
         }
 
-        public void LoadBudgets()
+        public void ReloadBudgets()
         {
             try
             {
+                _budgets.Clear();
+
                 using (var dbc = DatabaseHelper.GetConnector())
                 using (var cmd = dbc.BuildTextCommand("SELECT Id, Name FROM Budgets"))
                 using (var rdr = cmd.ExecuteReader())
@@ -155,7 +157,9 @@ namespace BudgetingForm
                         {
                             var id = rdr.GetInt("Id");
                             var name = rdr.GetString("Name");
-                            _budgets.Add(new Budget(id, name));
+                            var expenses = GetExpenses(id);
+                            var income = GetIncome(id);
+                            _budgets.Add(new Budget(id, name, expenses, income));
                             _log.Debug($"Successfully retrieved budget [{name}] with ID [{id}]");
                         }
                         catch (Exception ex)
@@ -181,7 +185,6 @@ namespace BudgetingForm
                 using (var cmd = dbc.BuildStoredProcedureCommand("spAddBudget", "@name", name))
                 {
                     int id = (int)cmd.ExecuteScalar();
-                    _budgets.Add(new Budget(id, name));
                     _log.Debug($"Successfully added budget [{name}] with ID [{id}] to the database.");
                 }
             }
