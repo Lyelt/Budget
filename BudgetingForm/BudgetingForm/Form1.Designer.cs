@@ -30,6 +30,17 @@
         {
             this.TabControl_Main = new System.Windows.Forms.TabControl();
             this.TabPage_Budget = new System.Windows.Forms.TabPage();
+            this.ComboBox_AddCategory = new System.Windows.Forms.ComboBox();
+            this.ComboBox_AddExpense = new System.Windows.Forms.ComboBox();
+            this.Label_Difference_Y = new System.Windows.Forms.Label();
+            this.Label_Expenses_Y = new System.Windows.Forms.Label();
+            this.Label_Income_Y = new System.Windows.Forms.Label();
+            this.Label_Difference_M = new System.Windows.Forms.Label();
+            this.Label_Expenses_M = new System.Windows.Forms.Label();
+            this.Label_Income_M = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label44 = new System.Windows.Forms.Label();
             this.Label_Difference_W = new System.Windows.Forms.Label();
             this.Label_Expenses_W = new System.Windows.Forms.Label();
             this.Label_Income_W = new System.Windows.Forms.Label();
@@ -37,8 +48,6 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.RadioButton_ManageIncome = new System.Windows.Forms.RadioButton();
-            this.Panel_ManageIncome = new System.Windows.Forms.Panel();
-            this.ComboBox_IncomeSources = new System.Windows.Forms.ComboBox();
             this.RadioButton_ManageExpenses = new System.Windows.Forms.RadioButton();
             this.Button_AddIncomeOrExpense = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
@@ -50,6 +59,8 @@
             this.Panel_ManageExpenses = new System.Windows.Forms.Panel();
             this.ListBox_ExpenseCategories = new System.Windows.Forms.ListBox();
             this.ListBox_Expenses = new System.Windows.Forms.ListBox();
+            this.Panel_ManageIncome = new System.Windows.Forms.Panel();
+            this.ComboBox_IncomeSources = new System.Windows.Forms.ComboBox();
             this.TabPage_Spending = new System.Windows.Forms.TabPage();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.MonthCalendar_SpendingMonth = new System.Windows.Forms.MonthCalendar();
@@ -69,22 +80,13 @@
             this.MenuItem_NewBudget = new System.Windows.Forms.ToolStripMenuItem();
             this.TextBox_CreateBudget = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.label44 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.Label_Difference_M = new System.Windows.Forms.Label();
-            this.Label_Expenses_M = new System.Windows.Forms.Label();
-            this.Label_Income_M = new System.Windows.Forms.Label();
-            this.Label_Difference_Y = new System.Windows.Forms.Label();
-            this.Label_Expenses_Y = new System.Windows.Forms.Label();
-            this.Label_Income_Y = new System.Windows.Forms.Label();
             this.TabControl_Main.SuspendLayout();
             this.TabPage_Budget.SuspendLayout();
-            this.Panel_ManageIncome.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_Weekly)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_Yearly)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_Monthly)).BeginInit();
             this.Panel_ManageExpenses.SuspendLayout();
+            this.Panel_ManageIncome.SuspendLayout();
             this.TabPage_Spending.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_SpendingAmount)).BeginInit();
@@ -120,7 +122,6 @@
             this.TabPage_Budget.Controls.Add(this.label7);
             this.TabPage_Budget.Controls.Add(this.label6);
             this.TabPage_Budget.Controls.Add(this.RadioButton_ManageIncome);
-            this.TabPage_Budget.Controls.Add(this.Panel_ManageIncome);
             this.TabPage_Budget.Controls.Add(this.RadioButton_ManageExpenses);
             this.TabPage_Budget.Controls.Add(this.Button_AddIncomeOrExpense);
             this.TabPage_Budget.Controls.Add(this.label9);
@@ -130,6 +131,7 @@
             this.TabPage_Budget.Controls.Add(this.Numeric_Yearly);
             this.TabPage_Budget.Controls.Add(this.Numeric_Monthly);
             this.TabPage_Budget.Controls.Add(this.Panel_ManageExpenses);
+            this.TabPage_Budget.Controls.Add(this.Panel_ManageIncome);
             this.TabPage_Budget.Location = new System.Drawing.Point(4, 22);
             this.TabPage_Budget.Name = "TabPage_Budget";
             this.TabPage_Budget.Padding = new System.Windows.Forms.Padding(3);
@@ -137,6 +139,114 @@
             this.TabPage_Budget.TabIndex = 0;
             this.TabPage_Budget.Text = "Budget";
             this.TabPage_Budget.UseVisualStyleBackColor = true;
+            // 
+            // ComboBox_AddCategory
+            // 
+            this.ComboBox_AddCategory.FormattingEnabled = true;
+            this.ComboBox_AddCategory.Location = new System.Drawing.Point(14, 191);
+            this.ComboBox_AddCategory.Name = "ComboBox_AddCategory";
+            this.ComboBox_AddCategory.Size = new System.Drawing.Size(121, 21);
+            this.ComboBox_AddCategory.TabIndex = 36;
+            this.ComboBox_AddCategory.Text = "Add or create...";
+            this.ComboBox_AddCategory.SelectedIndexChanged += new System.EventHandler(this.ComboBox_AddCategory_SelectedIndexChanged);
+            this.ComboBox_AddCategory.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboBox_AddCategory_KeyPress);
+            // 
+            // ComboBox_AddExpense
+            // 
+            this.ComboBox_AddExpense.FormattingEnabled = true;
+            this.ComboBox_AddExpense.Location = new System.Drawing.Point(182, 191);
+            this.ComboBox_AddExpense.Name = "ComboBox_AddExpense";
+            this.ComboBox_AddExpense.Size = new System.Drawing.Size(121, 21);
+            this.ComboBox_AddExpense.TabIndex = 35;
+            this.ComboBox_AddExpense.Text = "Add or create...";
+            this.ComboBox_AddExpense.SelectedIndexChanged += new System.EventHandler(this.ComboBox_AddExpense_SelectedIndexChanged);
+            this.ComboBox_AddExpense.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboBox_AddExpense_KeyPress);
+            // 
+            // Label_Difference_Y
+            // 
+            this.Label_Difference_Y.AutoSize = true;
+            this.Label_Difference_Y.ForeColor = System.Drawing.Color.OrangeRed;
+            this.Label_Difference_Y.Location = new System.Drawing.Point(282, 367);
+            this.Label_Difference_Y.Name = "Label_Difference_Y";
+            this.Label_Difference_Y.Size = new System.Drawing.Size(34, 13);
+            this.Label_Difference_Y.TabIndex = 34;
+            this.Label_Difference_Y.Text = "$0.00";
+            // 
+            // Label_Expenses_Y
+            // 
+            this.Label_Expenses_Y.AutoSize = true;
+            this.Label_Expenses_Y.Location = new System.Drawing.Point(165, 367);
+            this.Label_Expenses_Y.Name = "Label_Expenses_Y";
+            this.Label_Expenses_Y.Size = new System.Drawing.Size(34, 13);
+            this.Label_Expenses_Y.TabIndex = 33;
+            this.Label_Expenses_Y.Text = "$0.00";
+            // 
+            // Label_Income_Y
+            // 
+            this.Label_Income_Y.AutoSize = true;
+            this.Label_Income_Y.Location = new System.Drawing.Point(64, 367);
+            this.Label_Income_Y.Name = "Label_Income_Y";
+            this.Label_Income_Y.Size = new System.Drawing.Size(34, 13);
+            this.Label_Income_Y.TabIndex = 32;
+            this.Label_Income_Y.Text = "$0.00";
+            // 
+            // Label_Difference_M
+            // 
+            this.Label_Difference_M.AutoSize = true;
+            this.Label_Difference_M.ForeColor = System.Drawing.Color.OrangeRed;
+            this.Label_Difference_M.Location = new System.Drawing.Point(282, 334);
+            this.Label_Difference_M.Name = "Label_Difference_M";
+            this.Label_Difference_M.Size = new System.Drawing.Size(34, 13);
+            this.Label_Difference_M.TabIndex = 31;
+            this.Label_Difference_M.Text = "$0.00";
+            // 
+            // Label_Expenses_M
+            // 
+            this.Label_Expenses_M.AutoSize = true;
+            this.Label_Expenses_M.Location = new System.Drawing.Point(165, 334);
+            this.Label_Expenses_M.Name = "Label_Expenses_M";
+            this.Label_Expenses_M.Size = new System.Drawing.Size(34, 13);
+            this.Label_Expenses_M.TabIndex = 30;
+            this.Label_Expenses_M.Text = "$0.00";
+            // 
+            // Label_Income_M
+            // 
+            this.Label_Income_M.AutoSize = true;
+            this.Label_Income_M.Location = new System.Drawing.Point(64, 334);
+            this.Label_Income_M.Name = "Label_Income_M";
+            this.Label_Income_M.Size = new System.Drawing.Size(34, 13);
+            this.Label_Income_M.TabIndex = 29;
+            this.Label_Income_M.Text = "$0.00";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Location = new System.Drawing.Point(7, 367);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(42, 13);
+            this.label14.TabIndex = 28;
+            this.label14.Text = "Yearly";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label13.Location = new System.Drawing.Point(6, 334);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(51, 13);
+            this.label13.TabIndex = 27;
+            this.label13.Text = "Monthly";
+            // 
+            // label44
+            // 
+            this.label44.AutoSize = true;
+            this.label44.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label44.Location = new System.Drawing.Point(9, 305);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(49, 13);
+            this.label44.TabIndex = 26;
+            this.label44.Text = "Weekly";
             // 
             // Label_Difference_W
             // 
@@ -208,25 +318,6 @@
             this.RadioButton_ManageIncome.UseVisualStyleBackColor = true;
             this.RadioButton_ManageIncome.CheckedChanged += new System.EventHandler(this.RadioButton_ManageIncome_CheckedChanged);
             // 
-            // Panel_ManageIncome
-            // 
-            this.Panel_ManageIncome.Controls.Add(this.ComboBox_IncomeSources);
-            this.Panel_ManageIncome.Location = new System.Drawing.Point(15, 30);
-            this.Panel_ManageIncome.Name = "Panel_ManageIncome";
-            this.Panel_ManageIncome.Size = new System.Drawing.Size(327, 78);
-            this.Panel_ManageIncome.TabIndex = 19;
-            this.Panel_ManageIncome.Visible = false;
-            // 
-            // ComboBox_IncomeSources
-            // 
-            this.ComboBox_IncomeSources.FormattingEnabled = true;
-            this.ComboBox_IncomeSources.Location = new System.Drawing.Point(6, 7);
-            this.ComboBox_IncomeSources.Name = "ComboBox_IncomeSources";
-            this.ComboBox_IncomeSources.Size = new System.Drawing.Size(182, 21);
-            this.ComboBox_IncomeSources.TabIndex = 0;
-            this.ComboBox_IncomeSources.Text = "Select income source...";
-            this.ComboBox_IncomeSources.SelectedIndexChanged += new System.EventHandler(this.ComboBox_IncomeSources_SelectedIndexChanged);
-            // 
             // RadioButton_ManageExpenses
             // 
             this.RadioButton_ManageExpenses.AutoSize = true;
@@ -292,7 +383,6 @@
             this.Numeric_Weekly.Size = new System.Drawing.Size(66, 20);
             this.Numeric_Weekly.TabIndex = 9;
             this.Numeric_Weekly.ThousandsSeparator = true;
-            this.Numeric_Weekly.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Numeric_Weekly_KeyPress);
             // 
             // Numeric_Yearly
             // 
@@ -312,7 +402,6 @@
             this.Numeric_Yearly.Size = new System.Drawing.Size(66, 20);
             this.Numeric_Yearly.TabIndex = 11;
             this.Numeric_Yearly.ThousandsSeparator = true;
-            this.Numeric_Yearly.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Numeric_Yearly_KeyPress);
             // 
             // Numeric_Monthly
             // 
@@ -332,11 +421,12 @@
             this.Numeric_Monthly.Size = new System.Drawing.Size(66, 20);
             this.Numeric_Monthly.TabIndex = 10;
             this.Numeric_Monthly.ThousandsSeparator = true;
-            this.Numeric_Monthly.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Numeric_Monthly_KeyPress);
             // 
             // Panel_ManageExpenses
             // 
+            this.Panel_ManageExpenses.Controls.Add(this.ComboBox_AddCategory);
             this.Panel_ManageExpenses.Controls.Add(this.ListBox_ExpenseCategories);
+            this.Panel_ManageExpenses.Controls.Add(this.ComboBox_AddExpense);
             this.Panel_ManageExpenses.Controls.Add(this.ListBox_Expenses);
             this.Panel_ManageExpenses.Location = new System.Drawing.Point(18, 34);
             this.Panel_ManageExpenses.Name = "Panel_ManageExpenses";
@@ -360,6 +450,25 @@
             this.ListBox_Expenses.Size = new System.Drawing.Size(120, 173);
             this.ListBox_Expenses.TabIndex = 1;
             this.ListBox_Expenses.SelectedIndexChanged += new System.EventHandler(this.ListBox_Expenses_SelectedIndexChanged);
+            // 
+            // Panel_ManageIncome
+            // 
+            this.Panel_ManageIncome.Controls.Add(this.ComboBox_IncomeSources);
+            this.Panel_ManageIncome.Location = new System.Drawing.Point(15, 30);
+            this.Panel_ManageIncome.Name = "Panel_ManageIncome";
+            this.Panel_ManageIncome.Size = new System.Drawing.Size(327, 78);
+            this.Panel_ManageIncome.TabIndex = 19;
+            this.Panel_ManageIncome.Visible = false;
+            // 
+            // ComboBox_IncomeSources
+            // 
+            this.ComboBox_IncomeSources.FormattingEnabled = true;
+            this.ComboBox_IncomeSources.Location = new System.Drawing.Point(6, 7);
+            this.ComboBox_IncomeSources.Name = "ComboBox_IncomeSources";
+            this.ComboBox_IncomeSources.Size = new System.Drawing.Size(182, 21);
+            this.ComboBox_IncomeSources.TabIndex = 0;
+            this.ComboBox_IncomeSources.Text = "Select income source...";
+            this.ComboBox_IncomeSources.SelectedIndexChanged += new System.EventHandler(this.ComboBox_IncomeSources_SelectedIndexChanged);
             // 
             // TabPage_Spending
             // 
@@ -542,92 +651,6 @@
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(136, 6);
             // 
-            // label44
-            // 
-            this.label44.AutoSize = true;
-            this.label44.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label44.Location = new System.Drawing.Point(9, 305);
-            this.label44.Name = "label44";
-            this.label44.Size = new System.Drawing.Size(49, 13);
-            this.label44.TabIndex = 26;
-            this.label44.Text = "Weekly";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label13.Location = new System.Drawing.Point(6, 334);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(51, 13);
-            this.label13.TabIndex = 27;
-            this.label13.Text = "Monthly";
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(7, 367);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(42, 13);
-            this.label14.TabIndex = 28;
-            this.label14.Text = "Yearly";
-            // 
-            // Label_Difference_M
-            // 
-            this.Label_Difference_M.AutoSize = true;
-            this.Label_Difference_M.ForeColor = System.Drawing.Color.OrangeRed;
-            this.Label_Difference_M.Location = new System.Drawing.Point(282, 334);
-            this.Label_Difference_M.Name = "Label_Difference_M";
-            this.Label_Difference_M.Size = new System.Drawing.Size(34, 13);
-            this.Label_Difference_M.TabIndex = 31;
-            this.Label_Difference_M.Text = "$0.00";
-            // 
-            // Label_Expenses_M
-            // 
-            this.Label_Expenses_M.AutoSize = true;
-            this.Label_Expenses_M.Location = new System.Drawing.Point(165, 334);
-            this.Label_Expenses_M.Name = "Label_Expenses_M";
-            this.Label_Expenses_M.Size = new System.Drawing.Size(34, 13);
-            this.Label_Expenses_M.TabIndex = 30;
-            this.Label_Expenses_M.Text = "$0.00";
-            // 
-            // Label_Income_M
-            // 
-            this.Label_Income_M.AutoSize = true;
-            this.Label_Income_M.Location = new System.Drawing.Point(64, 334);
-            this.Label_Income_M.Name = "Label_Income_M";
-            this.Label_Income_M.Size = new System.Drawing.Size(34, 13);
-            this.Label_Income_M.TabIndex = 29;
-            this.Label_Income_M.Text = "$0.00";
-            // 
-            // Label_Difference_Y
-            // 
-            this.Label_Difference_Y.AutoSize = true;
-            this.Label_Difference_Y.ForeColor = System.Drawing.Color.OrangeRed;
-            this.Label_Difference_Y.Location = new System.Drawing.Point(282, 367);
-            this.Label_Difference_Y.Name = "Label_Difference_Y";
-            this.Label_Difference_Y.Size = new System.Drawing.Size(34, 13);
-            this.Label_Difference_Y.TabIndex = 34;
-            this.Label_Difference_Y.Text = "$0.00";
-            // 
-            // Label_Expenses_Y
-            // 
-            this.Label_Expenses_Y.AutoSize = true;
-            this.Label_Expenses_Y.Location = new System.Drawing.Point(165, 367);
-            this.Label_Expenses_Y.Name = "Label_Expenses_Y";
-            this.Label_Expenses_Y.Size = new System.Drawing.Size(34, 13);
-            this.Label_Expenses_Y.TabIndex = 33;
-            this.Label_Expenses_Y.Text = "$0.00";
-            // 
-            // Label_Income_Y
-            // 
-            this.Label_Income_Y.AutoSize = true;
-            this.Label_Income_Y.Location = new System.Drawing.Point(64, 367);
-            this.Label_Income_Y.Name = "Label_Income_Y";
-            this.Label_Income_Y.Size = new System.Drawing.Size(34, 13);
-            this.Label_Income_Y.TabIndex = 32;
-            this.Label_Income_Y.Text = "$0.00";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -640,11 +663,11 @@
             this.TabControl_Main.ResumeLayout(false);
             this.TabPage_Budget.ResumeLayout(false);
             this.TabPage_Budget.PerformLayout();
-            this.Panel_ManageIncome.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_Weekly)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_Yearly)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_Monthly)).EndInit();
             this.Panel_ManageExpenses.ResumeLayout(false);
+            this.Panel_ManageIncome.ResumeLayout(false);
             this.TabPage_Spending.ResumeLayout(false);
             this.TabPage_Spending.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -709,6 +732,8 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label44;
         private System.Windows.Forms.Label Label_Income_M;
+        private System.Windows.Forms.ComboBox ComboBox_AddCategory;
+        private System.Windows.Forms.ComboBox ComboBox_AddExpense;
     }
 }
 

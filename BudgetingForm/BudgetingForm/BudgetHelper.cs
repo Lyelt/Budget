@@ -197,5 +197,51 @@ namespace BudgetingForm
 
             return true;
         }
+
+        internal bool TryAddExpense(int id, string categoryName, string expenseName, out string error)
+        {
+            error = string.Empty;
+
+            try
+            {
+                using (var dbc = DatabaseHelper.GetConnector())
+                using (var cmd = dbc.BuildStoredProcedureCommand("spAddExpense", "@budgetId", id, "@categoryName", categoryName, "@expenseName", expenseName))
+                {
+                    cmd.ExecuteNonQuery();
+                    _log.Debug($"Successfully added expense [{expenseName}] in category [{categoryName}] to the database.");
+                }
+            }
+            catch (Exception ex)
+            {
+                error = $"Error while adding expense [{expenseName}] to the database: {ex.Message}";
+                _log.Error(ex, error);
+                return false;
+            }
+
+            return true;
+        }
+
+        internal bool TryAddCategory(string categoryName, out string error)
+        {
+            error = string.Empty;
+
+            try
+            {
+                using (var dbc = DatabaseHelper.GetConnector())
+                using (var cmd = dbc.BuildStoredProcedureCommand("spAddCategory","@categoryName", categoryName))
+                {
+                    cmd.ExecuteNonQuery();
+                    _log.Debug($"Successfully added category [{categoryName}] to the database.");
+                }
+            }
+            catch (Exception ex)
+            {
+                error = $"Error while adding expense [{categoryName}] to the database: {ex.Message}";
+                _log.Error(ex, error);
+                return false;
+            }
+
+            return true;
+        }
     }
 }

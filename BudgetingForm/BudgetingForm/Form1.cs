@@ -19,8 +19,11 @@ namespace BudgetingForm
         public Form1()
         {
             InitializeComponent();
+            this.Numeric_Weekly.TextChanged += new EventHandler(Numeric_Weekly_TextChanged);
+            this.Numeric_Monthly.TextChanged += new EventHandler(Numeric_Monthly_TextChanged);
+            this.Numeric_Yearly.TextChanged += new EventHandler(Numeric_Yearly_TextChanged);
+
             _budgetHelper = new BudgetHelper();
-            
             MenuItem_Open.DropDownItems.AddRange(_budgetHelper.Budgets.Select(b => new ToolStripMenuItem(b.Name)).ToArray());
         }
 
@@ -75,9 +78,21 @@ namespace BudgetingForm
 
         private void LoadAmounts(decimal weekly, decimal monthly, decimal yearly)
         {
-            Numeric_Weekly.Value = weekly;
-            Numeric_Monthly.Value = monthly;
-            Numeric_Yearly.Value = yearly;
+            // Hacky way to set the values without triggering the calculation events.
+            // We only want to dynamically calculate the values when the user enters a number
+            Numeric_Weekly.TextChanged -= Numeric_Weekly_TextChanged;
+            Numeric_Monthly.TextChanged -= Numeric_Monthly_TextChanged;
+            Numeric_Yearly.TextChanged -= Numeric_Yearly_TextChanged;
+
+            // Actually set the values and validate the range
+            Numeric_Weekly.Value = ValidateRange(weekly, Numeric_Weekly);
+            Numeric_Monthly.Value = ValidateRange(monthly, Numeric_Monthly);
+            Numeric_Yearly.Value = ValidateRange(yearly, Numeric_Yearly);
+
+            // Re-add the event handlers
+            Numeric_Weekly.TextChanged += Numeric_Weekly_TextChanged;
+            Numeric_Monthly.TextChanged += Numeric_Monthly_TextChanged;
+            Numeric_Yearly.TextChanged += Numeric_Yearly_TextChanged;
         }
 
         private void RadioButton_ManageIncome_CheckedChanged(object sender, EventArgs e)
@@ -154,25 +169,103 @@ namespace BudgetingForm
             Button_AddIncomeOrExpense.Enabled = true;
         }
 
-        // Calculate yearly and monthly based on weekly
-        private void Numeric_Weekly_KeyPress(object sender, KeyPressEventArgs e)
+        private decimal ValidateRange(decimal value, NumericUpDown control)
         {
-            Numeric_Yearly.Value = Numeric_Weekly.Value * 52;
-            Numeric_Monthly.Value = Numeric_Yearly.Value / 12;
+            return value > control.Maximum ? control.Maximum :
+                   value < control.Minimum ? control.Minimum :
+                   value;
         }
 
-        // Calculate yearly and weekly based on monthly
-        private void Numeric_Monthly_KeyPress(object sender, KeyPressEventArgs e)
+        private void Numeric_Weekly_TextChanged(object sender, EventArgs e)
         {
-            Numeric_Yearly.Value = Numeric_Monthly.Value * 12;
-            Numeric_Weekly.Value = Numeric_Yearly.Value / 52;
+            var weekly = decimal.Parse(Numeric_Weekly.Text);
+            var yearly = weekly * 52;
+            var monthly = yearly / 12;
+
+            LoadAmounts(weekly, monthly, yearly);
         }
 
-        // Calculate weekly and monthly based on yearly
-        private void Numeric_Yearly_KeyPress(object sender, KeyPressEventArgs e)
+        private void Numeric_Monthly_TextChanged(object sender, EventArgs e)
         {
-            Numeric_Weekly.Value = Numeric_Yearly.Value / 52;
-            Numeric_Monthly.Value = Numeric_Yearly.Value / 12;
+            var monthly = decimal.Parse(Numeric_Monthly.Text);
+            var yearly = monthly * 12;
+            var weekly = yearly / 52;
+
+            LoadAmounts(weekly, monthly, yearly);
+        }
+
+        private void Numeric_Yearly_TextChanged(object sender, EventArgs e)
+        {
+            var yearly = decimal.Parse(Numeric_Yearly.Text);
+            var monthly = yearly / 12;
+            var weekly = yearly / 52;
+
+            LoadAmounts(weekly, monthly, yearly);
+        }
+
+        private void ComboBox_AddExpense_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            ComboBox_AddExpense.ForeColor = SystemColors.InfoText;
+
+            // User pressed enter to save the budget
+            if (e.KeyChar == (char)Keys.Return)
+            {
+                AddExpense(ComboBox_AddExpense.Text);
+            }
+        }
+
+        private void ComboBox_AddExpense_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            AddExpense(ComboBox_AddExpense.SelectedItem.ToString());
+        }
+
+        private void AddExpense(string name)
+        {
+            string categoryName = ListBox_ExpenseCategories.SelectedItem.ToString();
+            int id = _currentBudget.Id;
+
+            if (_budgetHelper.TryAddExpense(id, categoryName, name, out var error))
+            {
+                //_budgetHelper.ReloadBudgets(); // reload our budget info
+
+                ComboBox_AddExpense.Text = "Add or create new...";
+                ComboBox_AddExpense.ForeColor = SystemColors.InactiveCaption;
+            }
+            else
+            {
+                MessageBox.Show(error, "Failed to add expense", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ComboBox_AddCategory_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            ComboBox_AddCategory.ForeColor = SystemColors.InfoText;
+
+            // User pressed enter to save the budget
+            if (e.KeyChar == (char)Keys.Return)
+            {
+                AddCategory(ComboBox_AddCategory.Text);
+            }
+        }
+
+        private void ComboBox_AddCategory_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            AddCategory(ComboBox_AddCategory.SelectedItem.ToString());
+        }
+
+        private void AddCategory(string name)
+        {
+            if (_budgetHelper.TryAddCategory(name, out var error))
+            {
+                //_budgetHelper.ReloadBudgets(); // reload our budget info
+
+                ComboBox_AddCategory.Text = "Add or create new...";
+                ComboBox_AddCategory.ForeColor = SystemColors.InactiveCaption;
+            }
+            else
+            {
+                MessageBox.Show(error, "Failed to add category", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
