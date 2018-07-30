@@ -243,5 +243,28 @@ namespace BudgetingForm
 
             return true;
         }
+
+        internal bool TryUpdateExpense(string expenseCategoryName, string expenseName, decimal weekly, decimal monthly, decimal yearly, out string error)
+        {
+            error = string.Empty;
+
+            try
+            {
+                using (var dbc = DatabaseHelper.GetConnector())
+                using (var cmd = dbc.BuildStoredProcedureCommand("spUpdateExpense", "@expenseCategoryName", expenseCategoryName, "@expenseName", expenseName, "@weekly", weekly, "@monthly", monthly, "@yearly", yearly))
+                {
+                    cmd.ExecuteNonQuery();
+                    _log.Debug($"Successfully updated expense [{expenseName}] in category [{expenseCategoryName}].");
+                }
+            }
+            catch (Exception ex)
+            {
+                error = $"Error while updating expense [{expenseName}] in category [{expenseCategoryName}]: {ex.Message}";
+                _log.Error(ex, error);
+                return false;
+            }
+
+            return true;
+        }
     }
 }

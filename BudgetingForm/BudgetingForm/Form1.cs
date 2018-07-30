@@ -27,7 +27,7 @@ namespace BudgetingForm
             MenuItem_Open.DropDownItems.AddRange(_budgetHelper.Budgets.Select(b => new ToolStripMenuItem(b.Name)).ToArray());
         }
 
-        private void LoadBudget(string name)
+        private void LoadBudget(string name, string currentSelectedCategory = null, string currentSelectedExpense = null)
         {
             TabControl_Main.Enabled = true;
 
@@ -43,6 +43,16 @@ namespace BudgetingForm
             ComboBox_IncomeSources.Items.AddRange(_currentBudget.Incomes.Select(i => i.IncomeName).ToArray());
 
             SetDifferenceLabels();
+
+            if (currentSelectedCategory != null)
+            {
+                ListBox_ExpenseCategories.SelectedIndex = ListBox_ExpenseCategories.Items.IndexOf(currentSelectedCategory);
+            }
+
+            if (currentSelectedExpense != null)
+            {
+                ListBox_Expenses.SelectedIndex = ListBox_Expenses.Items.IndexOf(currentSelectedExpense);
+            }
         }
 
         private void SetDifferenceLabels()
@@ -141,7 +151,17 @@ namespace BudgetingForm
 
         private void Button_AddIncomeOrExpense_Click(object sender, EventArgs e)
         {
-
+            if (RadioButton_ManageExpenses.Checked)
+            {
+                if (_budgetHelper.TryUpdateExpense(ListBox_ExpenseCategories.SelectedItem.ToString(), ListBox_Expenses.SelectedItem.ToString(), Numeric_Weekly.Value, Numeric_Monthly.Value, Numeric_Yearly.Value, out var err))
+                {
+                    ReloadBudgetInfo();
+                }
+                else
+                {
+                    MessageBox.Show(err, "Failed to update expense", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
 
         // User clicked an expense category - list the proper expenses
@@ -226,8 +246,7 @@ namespace BudgetingForm
 
             if (_budgetHelper.TryAddExpense(id, categoryName, name, out var error))
             {
-                //_budgetHelper.ReloadBudgets(); // reload our budget info
-
+                ReloadBudgetInfo();
                 ComboBox_AddExpense.Text = "Add or create new...";
                 ComboBox_AddExpense.ForeColor = SystemColors.InactiveCaption;
             }
@@ -257,8 +276,7 @@ namespace BudgetingForm
         {
             if (_budgetHelper.TryAddCategory(name, out var error))
             {
-                //_budgetHelper.ReloadBudgets(); // reload our budget info
-
+                ReloadBudgetInfo();
                 ComboBox_AddCategory.Text = "Add or create new...";
                 ComboBox_AddCategory.ForeColor = SystemColors.InactiveCaption;
             }
@@ -266,6 +284,16 @@ namespace BudgetingForm
             {
                 MessageBox.Show(error, "Failed to add category", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void ReloadBudgetInfo()
+        {
+            _budgetHelper.ReloadBudgets();
+            LoadBudget(_currentBudget.Name, ListBox_ExpenseCategories.SelectedItem?.ToString(), ListBox_Expenses.SelectedItem?.ToString());
+
+
+            var catId = _expenseCategories.First(ec => ec.CategoryName == ListBox_ExpenseCategories.SelectedItem.ToString()).Id;
+            LoadExpenses(catId);
         }
     }
 }

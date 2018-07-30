@@ -142,23 +142,25 @@
             // 
             // ComboBox_AddCategory
             // 
+            this.ComboBox_AddCategory.ForeColor = System.Drawing.SystemColors.InactiveCaption;
             this.ComboBox_AddCategory.FormattingEnabled = true;
             this.ComboBox_AddCategory.Location = new System.Drawing.Point(14, 191);
             this.ComboBox_AddCategory.Name = "ComboBox_AddCategory";
             this.ComboBox_AddCategory.Size = new System.Drawing.Size(121, 21);
             this.ComboBox_AddCategory.TabIndex = 36;
-            this.ComboBox_AddCategory.Text = "Add or create...";
+            this.ComboBox_AddCategory.Text = "Add or create new...";
             this.ComboBox_AddCategory.SelectedIndexChanged += new System.EventHandler(this.ComboBox_AddCategory_SelectedIndexChanged);
             this.ComboBox_AddCategory.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboBox_AddCategory_KeyPress);
             // 
             // ComboBox_AddExpense
             // 
+            this.ComboBox_AddExpense.ForeColor = System.Drawing.SystemColors.InactiveCaption;
             this.ComboBox_AddExpense.FormattingEnabled = true;
             this.ComboBox_AddExpense.Location = new System.Drawing.Point(182, 191);
             this.ComboBox_AddExpense.Name = "ComboBox_AddExpense";
             this.ComboBox_AddExpense.Size = new System.Drawing.Size(121, 21);
             this.ComboBox_AddExpense.TabIndex = 35;
-            this.ComboBox_AddExpense.Text = "Add or create...";
+            this.ComboBox_AddExpense.Text = "Add or create new...";
             this.ComboBox_AddExpense.SelectedIndexChanged += new System.EventHandler(this.ComboBox_AddExpense_SelectedIndexChanged);
             this.ComboBox_AddExpense.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboBox_AddExpense_KeyPress);
             // 
