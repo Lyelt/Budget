@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logger", "..\..\Logger\Logg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseConnector", "..\..\DatabaseConnector\DatabaseConnector\DatabaseConnector\DatabaseConnector.csproj", "{13CFB5E7-ED15-4025-90BC-1EAB091B0D97}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecordExpenses", "RecordExpenses\RecordExpenses.csproj", "{C797AA30-98CE-49D1-A1E6-DA9F16EAFD15}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{13CFB5E7-ED15-4025-90BC-1EAB091B0D97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13CFB5E7-ED15-4025-90BC-1EAB091B0D97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13CFB5E7-ED15-4025-90BC-1EAB091B0D97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C797AA30-98CE-49D1-A1E6-DA9F16EAFD15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C797AA30-98CE-49D1-A1E6-DA9F16EAFD15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C797AA30-98CE-49D1-A1E6-DA9F16EAFD15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C797AA30-98CE-49D1-A1E6-DA9F16EAFD15}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

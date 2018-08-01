@@ -19,20 +19,25 @@ namespace BudgetingForm
         public Form1()
         {
             InitializeComponent();
+            Scheduler.SetDailyTask();
             this.Numeric_Weekly.TextChanged += new EventHandler(Numeric_Weekly_TextChanged);
             this.Numeric_Monthly.TextChanged += new EventHandler(Numeric_Monthly_TextChanged);
             this.Numeric_Yearly.TextChanged += new EventHandler(Numeric_Yearly_TextChanged);
 
             _budgetHelper = new BudgetHelper();
             MenuItem_Open.DropDownItems.AddRange(_budgetHelper.Budgets.Select(b => new ToolStripMenuItem(b.Name)).ToArray());
+            LoadBudget("Nick's Budget");
         }
 
-        private void LoadBudget(string name, string currentSelectedCategory = null, string currentSelectedExpense = null)
+        private void LoadBudget(string name, string currentSelectedCategory = null, string currentSelectedExpense = null, string currentSelectedIncome = null)
         {
+            Label_CurrentBudgetName.Text = name;
             TabControl_Main.Enabled = true;
 
             _currentBudget = _budgetHelper.GetBudgetByName(name);
             _expenseCategories = _budgetHelper.GetExpenseCategories();
+
+            ReloadSpendingTable();
 
             ListBox_Expenses.Items.Clear();
 
@@ -41,6 +46,12 @@ namespace BudgetingForm
 
             ComboBox_IncomeSources.Items.Clear();
             ComboBox_IncomeSources.Items.AddRange(_currentBudget.Incomes.Select(i => i.IncomeName).ToArray());
+
+            ComboBox_IncomeSources.Items.Clear();
+            ComboBox_IncomeSources.Items.AddRange(BudgetHelper.AllIncomes.Select(i => i.IncomeName).ToArray());
+
+            ComboBox_SpendingCategory.Items.Clear();
+            ComboBox_SpendingCategory.Items.AddRange(_expenseCategories.Select(c => c.CategoryName).ToArray());
 
             SetDifferenceLabels();
 
@@ -53,21 +64,26 @@ namespace BudgetingForm
             {
                 ListBox_Expenses.SelectedIndex = ListBox_Expenses.Items.IndexOf(currentSelectedExpense);
             }
+
+            if (currentSelectedIncome != null)
+            {
+                ComboBox_IncomeSources.SelectedIndex = ListBox_Expenses.Items.IndexOf(currentSelectedIncome);
+            }
         }
 
         private void SetDifferenceLabels()
         {
-            var weeklyExpenses = _currentBudget.Expenses.Sum(e => e.Weekly);
-            var monthlyExpenses = _currentBudget.Expenses.Sum(e => e.Monthly);
-            var yearlyExpenses = _currentBudget.Expenses.Sum(e => e.Yearly);
+            var weeklyExpenses = Math.Round(_currentBudget.Expenses.Sum(e => e.Weekly), 2);
+            var monthlyExpenses = Math.Round(_currentBudget.Expenses.Sum(e => e.Monthly), 2);
+            var yearlyExpenses = Math.Round(_currentBudget.Expenses.Sum(e => e.Yearly), 2);
 
-            var weeklyIncome = _currentBudget.Incomes.Sum(i => i.Weekly);
-            var monthlyIncome = _currentBudget.Incomes.Sum(i => i.Monthly);
-            var yearlyIncome = _currentBudget.Incomes.Sum(i => i.Yearly);
+            var weeklyIncome = Math.Round(_currentBudget.Incomes.Sum(i => i.Weekly), 2);
+            var monthlyIncome = Math.Round(_currentBudget.Incomes.Sum(i => i.Monthly), 2);
+            var yearlyIncome = Math.Round(_currentBudget.Incomes.Sum(i => i.Yearly), 2);
 
-            var weeklyDifference = weeklyIncome - weeklyExpenses;
-            var monthlyDifference = monthlyIncome - monthlyExpenses;
-            var yearlyDifference = yearlyIncome - yearlyExpenses;
+            var weeklyDifference = Math.Round(weeklyIncome - weeklyExpenses, 2);
+            var monthlyDifference = Math.Round(monthlyIncome - monthlyExpenses, 2);
+            var yearlyDifference = Math.Round(yearlyIncome - yearlyExpenses, 2);
 
             Label_Expenses_W.Text = $"${weeklyExpenses}";
             Label_Expenses_M.Text = $"${monthlyExpenses}";
@@ -75,15 +91,22 @@ namespace BudgetingForm
             Label_Income_W.Text = $"${weeklyIncome}";
             Label_Income_M.Text = $"${monthlyIncome}";
             Label_Income_Y.Text = $"${yearlyIncome}";
+
             Label_Difference_W.Text = $"${weeklyDifference}";
             Label_Difference_M.Text = $"${monthlyDifference}";
             Label_Difference_Y.Text = $"${yearlyDifference}";
+
+            Label_Difference_W.ForeColor = weeklyDifference <= 0 ? Color.Red : Color.Green;
+            Label_Difference_M.ForeColor = monthlyDifference <= 0 ? Color.Red : Color.Green;
+            Label_Difference_Y.ForeColor = yearlyDifference <= 0 ? Color.Red : Color.Green;
         }
 
         private void LoadExpenses(int categoryId)
         {
             ListBox_Expenses.Items.Clear();
             ListBox_Expenses.Items.AddRange(_currentBudget.Expenses.Where(e => e.ExpenseCategoryId == categoryId).Select(e => e.ExpenseName).ToArray());
+            ComboBox_AddExpense.Items.Clear();
+            ComboBox_AddExpense.Items.AddRange(BudgetHelper.AllExpenses.Where(e => e.ExpenseCategoryId == categoryId && !_currentBudget.Expenses.Any(e2 => e2.ExpenseName == e.ExpenseName)).Select(e => e.ExpenseName).ToArray());
         }
 
         private void LoadAmounts(decimal weekly, decimal monthly, decimal yearly)
@@ -160,6 +183,17 @@ namespace BudgetingForm
                 else
                 {
                     MessageBox.Show(err, "Failed to update expense", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                if (_budgetHelper.TryUpdateIncome(ComboBox_IncomeSources.SelectedItem.ToString(), Numeric_Weekly.Value, Numeric_Monthly.Value, Numeric_Yearly.Value, out var err))
+                {
+                    ReloadBudgetInfo();
+                }
+                else
+                {
+                    MessageBox.Show(err, "Failed to update income", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -248,7 +282,6 @@ namespace BudgetingForm
             {
                 ReloadBudgetInfo();
                 ComboBox_AddExpense.Text = "Add or create new...";
-                ComboBox_AddExpense.ForeColor = SystemColors.InactiveCaption;
             }
             else
             {
@@ -278,7 +311,6 @@ namespace BudgetingForm
             {
                 ReloadBudgetInfo();
                 ComboBox_AddCategory.Text = "Add or create new...";
-                ComboBox_AddCategory.ForeColor = SystemColors.InactiveCaption;
             }
             else
             {
@@ -289,11 +321,64 @@ namespace BudgetingForm
         private void ReloadBudgetInfo()
         {
             _budgetHelper.ReloadBudgets();
-            LoadBudget(_currentBudget.Name, ListBox_ExpenseCategories.SelectedItem?.ToString(), ListBox_Expenses.SelectedItem?.ToString());
+            LoadBudget(_currentBudget.Name, ListBox_ExpenseCategories.SelectedItem?.ToString(), ListBox_Expenses.SelectedItem?.ToString(), ComboBox_IncomeSources.SelectedItem?.ToString());
+        }
 
+        private void ComboBox_SpendingCategory_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ComboBox_SpendingExpense.Enabled = true;
+            Numeric_SpendingAmount.Enabled = true;
+            TextBox_SpendingDescription.Enabled = true;
+            MonthCalendar_SpendingMonth.Enabled = true;
 
-            var catId = _expenseCategories.First(ec => ec.CategoryName == ListBox_ExpenseCategories.SelectedItem.ToString()).Id;
-            LoadExpenses(catId);
+            ComboBox_SpendingExpense.Items.Clear();
+            var catId = _expenseCategories.First(ec => ec.CategoryName == ComboBox_SpendingCategory.SelectedItem.ToString()).Id;
+            ComboBox_SpendingExpense.Items.AddRange(_currentBudget.Expenses.Where(ex => ex.ExpenseCategoryId == catId).Select(ex => ex.ExpenseName).ToArray());
+        }
+
+        private void ComboBox_SpendingExpense_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Button_SpendingSubmit.Enabled = true;
+        }
+
+        private void Button_SpendingSubmit_Click(object sender, EventArgs e)
+        {
+            string categoryName = ComboBox_SpendingCategory.SelectedItem.ToString();
+            string expenseName = ComboBox_SpendingExpense.SelectedItem.ToString();
+            string desc = TextBox_SpendingDescription.Text;
+            decimal amount = Numeric_SpendingAmount.Value;
+            int id = _currentBudget.Id;
+            DateTime dt = MonthCalendar_SpendingMonth.SelectionRange.Start;
+
+            if (_budgetHelper.TryAddReceipt(id, categoryName, expenseName, amount, dt, desc, out var error))
+            {
+                ReloadSpendingInfo();
+                ReloadSpendingTable();
+            }
+            else
+            {
+                MessageBox.Show(error, "Failed to add receipt", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ReloadSpendingInfo()
+        {
+            ComboBox_SpendingExpense.Enabled = false;
+            Numeric_SpendingAmount.Enabled = false;
+            TextBox_SpendingDescription.Enabled = false;
+            MonthCalendar_SpendingMonth.Enabled = false;
+
+            ComboBox_SpendingExpense.Items.Clear();
+        }
+
+        private void ReloadSpendingTable()
+        {
+            spendingTableAdapter.Fill(lyeltDataSet.Spending, _currentBudget.Id);
+        }
+
+        private void Button_SetSchedule_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

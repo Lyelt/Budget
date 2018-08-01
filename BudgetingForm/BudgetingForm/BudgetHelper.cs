@@ -10,6 +10,15 @@ namespace BudgetingForm
 {
     public class BudgetHelper
     {
+        #region Static
+        private static List<Expense> _allExpenses = new List<Expense>();
+        private static List<Income> _allIncomes = new List<Income>();
+
+        public static IReadOnlyList<Expense> AllExpenses => _allExpenses.AsReadOnly();
+
+        public static IReadOnlyList<Income> AllIncomes => _allIncomes.AsReadOnly();
+        #endregion
+
         private Logger _log;
         private List<Budget> _budgets = new List<Budget>();
 
@@ -146,28 +155,65 @@ namespace BudgetingForm
             try
             {
                 _budgets.Clear();
+                _allExpenses.Clear();
+                _allIncomes.Clear();
 
                 using (var dbc = DatabaseHelper.GetConnector())
-                using (var cmd = dbc.BuildTextCommand("SELECT Id, Name FROM Budgets"))
-                using (var rdr = cmd.ExecuteReader())
                 {
-                    while (rdr.Read())
+                    using (var cmd = dbc.BuildTextCommand("SELECT Id, Name FROM Budgets"))
+                    using (var rdr = cmd.ExecuteReader())
                     {
-                        try
+                        while (rdr.Read())
                         {
-                            var id = rdr.GetInt("Id");
-                            var name = rdr.GetString("Name");
-                            var expenses = GetExpenses(id);
-                            var income = GetIncome(id);
-                            _budgets.Add(new Budget(id, name, expenses, income));
-                            _log.Debug($"Successfully retrieved budget [{name}] with ID [{id}]");
+                            try
+                            {
+                                var id = rdr.GetInt("Id");
+                                var name = rdr.GetString("Name");
+                                var expenses = GetExpenses(id);
+                                var income = GetIncome(id);
+                                _budgets.Add(new Budget(id, name, expenses, income));
+                                _log.Debug($"Successfully retrieved budget [{name}] with ID [{id}]");
+                            }
+                            catch (Exception ex)
+                            {
+                                _log.Error(ex, "Failed to get budget from database");
+                            }
                         }
-                        catch (Exception ex)
+                    }
+
+                    using (var cmd = dbc.BuildTextCommand("SELECT Id as ExpenseId, ExpenseCategoryId, ExpenseName, Weekly, Monthly, Yearly FROM Expenses"))
+                    using (var rdr = cmd.ExecuteReader())
+                    {
+                        while (rdr.Read())
                         {
-                            _log.Error(ex, "Failed to get budget from database");
+                            try
+                            {
+                                _allExpenses.Add(Expense.Create(rdr));
+                            }
+                            catch (Exception ex)
+                            {
+                                _log.Error(ex, "Failed to get expense from database");
+                            }
+                        }
+                    }
+
+                    using (var cmd = dbc.BuildTextCommand("SELECT Id as IncomeId, Name as IncomeName, Weekly, Monthly, Yearly FROM Income"))
+                    using (var rdr = cmd.ExecuteReader())
+                    {
+                        while (rdr.Read())
+                        {
+                            try
+                            {
+                                _allIncomes.Add(Income.Create(rdr));
+                            }
+                            catch (Exception ex)
+                            {
+                                _log.Error(ex, "Failed to get income from database");
+                            }
                         }
                     }
                 }
+                
             }
             catch (Exception ex)
             {
@@ -221,6 +267,29 @@ namespace BudgetingForm
             return true;
         }
 
+        internal bool TryUpdateIncome(string incomeName, decimal weekly, decimal monthly, decimal yearly, out string error)
+        {
+            error = string.Empty;
+
+            try
+            {
+                using (var dbc = DatabaseHelper.GetConnector())
+                using (var cmd = dbc.BuildStoredProcedureCommand("spUpdateIncome", "@incomeName", incomeName, "@weekly", weekly, "@monthly", monthly, "@yearly", yearly))
+                {
+                    cmd.ExecuteNonQuery();
+                    _log.Debug($"Successfully updated income [{incomeName}].");
+                }
+            }
+            catch (Exception ex)
+            {
+                error = $"Error while updating income [{incomeName}]: {ex.Message}";
+                _log.Error(ex, error);
+                return false;
+            }
+
+            return true;
+        }
+
         internal bool TryAddCategory(string categoryName, out string error)
         {
             error = string.Empty;
@@ -260,6 +329,29 @@ namespace BudgetingForm
             catch (Exception ex)
             {
                 error = $"Error while updating expense [{expenseName}] in category [{expenseCategoryName}]: {ex.Message}";
+                _log.Error(ex, error);
+                return false;
+            }
+
+            return true;
+        }
+
+        internal bool TryAddReceipt(int id, string categoryName, string expenseName, decimal amount, DateTime dt, string desc, out string error, bool schedule = false)
+        {
+            error = string.Empty;
+
+            try
+            {
+                using (var dbc = DatabaseHelper.GetConnector())
+                using (var cmd = dbc.BuildStoredProcedureCommand("spAddReceipt", "@budgetId", id, "@expenseCategoryName", categoryName, "@expenseName", expenseName, "@amount", amount, "@date", dt, "@description", desc, "@schedule", schedule))
+                {
+                    cmd.ExecuteNonQuery();
+                    _log.Debug($"Successfully added receipt for [{expenseName}] in category [{categoryName}]. Amount: [{amount}], Date: [{dt}], Description: [{desc}]");
+                }
+            }
+            catch (Exception ex)
+            {
+                error = $"Error while adding receipt for [{expenseName}] in category [{categoryName}]: {ex.Message}";
                 _log.Error(ex, error);
                 return false;
             }
