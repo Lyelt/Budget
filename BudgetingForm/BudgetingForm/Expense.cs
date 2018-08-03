@@ -1,6 +1,7 @@
 ﻿using LyeltDatabaseConnector;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,15 +32,23 @@ namespace BudgetingForm
             Yearly = yearly;
         }
 
-        public static Expense Create(System.Data.SqlClient.SqlDataReader rdr)
+        public static Expense Create(SqlDataReader rdr)
         {
             var id = rdr.GetInt("ExpenseId");
             var catid = rdr.GetInt("ExpenseCategoryId");
             var name = rdr.GetString("ExpenseName");
-            var weekly = rdr.GetDouble("Weekly");
-            var monthly = rdr.GetDouble("Monthly");
-            var yearly = rdr.GetDouble("Yearly");
-            return new Expense(id, catid, name, weekly, monthly, yearly);
+
+            try
+            {
+                var weekly = rdr.GetDouble("Weekly");
+                var monthly = rdr.GetDouble("Monthly");
+                var yearly = rdr.GetDouble("Yearly");
+                return new Expense(id, catid, name, weekly, monthly, yearly);
+            }
+            catch (Exception)
+            {
+                return new Expense(id, catid, name, 0, 0, 0);
+            }
         }
     }
 }

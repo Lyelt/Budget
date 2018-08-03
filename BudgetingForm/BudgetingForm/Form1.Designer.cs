@@ -275,6 +275,8 @@
             // 
             // TabPage_Budget
             // 
+            this.TabPage_Budget.Controls.Add(this.Panel_ManageExpenses);
+            this.TabPage_Budget.Controls.Add(this.Panel_ManageIncome);
             this.TabPage_Budget.Controls.Add(this.Label_Difference_Y);
             this.TabPage_Budget.Controls.Add(this.Label_Expenses_Y);
             this.TabPage_Budget.Controls.Add(this.Label_Income_Y);
@@ -299,8 +301,6 @@
             this.TabPage_Budget.Controls.Add(this.Numeric_Weekly);
             this.TabPage_Budget.Controls.Add(this.Numeric_Yearly);
             this.TabPage_Budget.Controls.Add(this.Numeric_Monthly);
-            this.TabPage_Budget.Controls.Add(this.Panel_ManageExpenses);
-            this.TabPage_Budget.Controls.Add(this.Panel_ManageIncome);
             this.TabPage_Budget.Location = new System.Drawing.Point(4, 22);
             this.TabPage_Budget.Name = "TabPage_Budget";
             this.TabPage_Budget.Padding = new System.Windows.Forms.Padding(3);
@@ -832,7 +832,6 @@
             // 
             // Button_SetSchedule
             // 
-            this.Button_SetSchedule.Enabled = false;
             this.Button_SetSchedule.Location = new System.Drawing.Point(19, 159);
             this.Button_SetSchedule.Name = "Button_SetSchedule";
             this.Button_SetSchedule.Size = new System.Drawing.Size(85, 23);

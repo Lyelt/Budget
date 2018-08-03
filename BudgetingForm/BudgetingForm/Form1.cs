@@ -176,9 +176,10 @@ namespace BudgetingForm
         {
             if (RadioButton_ManageExpenses.Checked)
             {
-                if (_budgetHelper.TryUpdateExpense(ListBox_ExpenseCategories.SelectedItem.ToString(), ListBox_Expenses.SelectedItem.ToString(), Numeric_Weekly.Value, Numeric_Monthly.Value, Numeric_Yearly.Value, out var err))
+                if (_budgetHelper.TryUpdateExpense(_currentBudget.Id, ListBox_ExpenseCategories.SelectedItem.ToString(), ListBox_Expenses.SelectedItem.ToString(), Numeric_Weekly.Value, Numeric_Monthly.Value, Numeric_Yearly.Value, out var err))
                 {
                     ReloadBudgetInfo();
+                    LoadAmounts(0, 0, 0);
                 }
                 else
                 {
@@ -187,9 +188,10 @@ namespace BudgetingForm
             }
             else
             {
-                if (_budgetHelper.TryUpdateIncome(ComboBox_IncomeSources.SelectedItem.ToString(), Numeric_Weekly.Value, Numeric_Monthly.Value, Numeric_Yearly.Value, out var err))
+                if (_budgetHelper.TryUpdateIncome(_currentBudget.Id, ComboBox_IncomeSources.SelectedItem.ToString(), Numeric_Weekly.Value, Numeric_Monthly.Value, Numeric_Yearly.Value, out var err))
                 {
                     ReloadBudgetInfo();
+                    LoadAmounts(0, 0, 0);
                 }
                 else
                 {
@@ -201,6 +203,9 @@ namespace BudgetingForm
         // User clicked an expense category - list the proper expenses
         private void ListBox_ExpenseCategories_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (ListBox_ExpenseCategories.SelectedItem == null)
+                return;
+
             LoadAmounts(0, 0, 0);
             var id = _expenseCategories.First(ec => ec.CategoryName == ListBox_ExpenseCategories.SelectedItem.ToString()).Id;
             LoadExpenses(id);
@@ -210,7 +215,20 @@ namespace BudgetingForm
         // User clicked an income - show the related data
         private void ComboBox_IncomeSources_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Income selected = _currentBudget.Incomes.First(i => i.IncomeName == ComboBox_IncomeSources.SelectedItem.ToString());
+            if (ComboBox_IncomeSources.SelectedItem == null)
+                return;
+
+            Income selected = _currentBudget.Incomes.FirstOrDefault(i => i.IncomeName == ComboBox_IncomeSources.SelectedItem.ToString());
+
+            if (selected == null)
+            {
+                AddIncome(ComboBox_IncomeSources.SelectedItem?.ToString() ?? ComboBox_IncomeSources.SelectedText);
+                selected = _currentBudget.Incomes.FirstOrDefault(i => i.IncomeName == ComboBox_IncomeSources.SelectedItem.ToString());
+
+                if (selected == null)
+                    return;
+            }
+
             LoadAmounts((decimal)selected.Weekly, (decimal)selected.Monthly, (decimal)selected.Yearly);
             Button_AddIncomeOrExpense.Enabled = true;
         }
@@ -218,6 +236,9 @@ namespace BudgetingForm
         // User clicked an expense - show the related data
         private void ListBox_Expenses_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (ListBox_Expenses.SelectedItem == null)
+                return;
+
             Expense selected = _currentBudget.Expenses.First(exp => exp.ExpenseName == ListBox_Expenses.SelectedItem.ToString());
             LoadAmounts((decimal)selected.Weekly, (decimal)selected.Monthly, (decimal)selected.Yearly);
             Button_AddIncomeOrExpense.Enabled = true;
@@ -281,11 +302,24 @@ namespace BudgetingForm
             if (_budgetHelper.TryAddExpense(id, categoryName, name, out var error))
             {
                 ReloadBudgetInfo();
-                ComboBox_AddExpense.Text = "Add or create new...";
             }
             else
             {
                 MessageBox.Show(error, "Failed to add expense", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void AddIncome(string name)
+        {
+            int budgetId = _currentBudget.Id;
+
+            if (_budgetHelper.TryAddIncome(budgetId, name, out var error))
+            {
+                ReloadBudgetInfo();
+            }
+            else
+            {
+                MessageBox.Show(error, "Failed to add income", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -310,7 +344,6 @@ namespace BudgetingForm
             if (_budgetHelper.TryAddCategory(name, out var error))
             {
                 ReloadBudgetInfo();
-                ComboBox_AddCategory.Text = "Add or create new...";
             }
             else
             {
@@ -322,6 +355,10 @@ namespace BudgetingForm
         {
             _budgetHelper.ReloadBudgets();
             LoadBudget(_currentBudget.Name, ListBox_ExpenseCategories.SelectedItem?.ToString(), ListBox_Expenses.SelectedItem?.ToString(), ComboBox_IncomeSources.SelectedItem?.ToString());
+            Button_AddIncomeOrExpense.Enabled = false;
+            ComboBox_AddExpense.Text = "Add or create new...";
+            ComboBox_AddCategory.Text = "Add or create new...";
+            ComboBox_IncomeSources.Text = "Select income source...";
         }
 
         private void ComboBox_SpendingCategory_SelectedIndexChanged(object sender, EventArgs e)
@@ -339,34 +376,31 @@ namespace BudgetingForm
         private void ComboBox_SpendingExpense_SelectedIndexChanged(object sender, EventArgs e)
         {
             Button_SpendingSubmit.Enabled = true;
+            Button_SetSchedule.Enabled = true;
         }
 
         private void Button_SpendingSubmit_Click(object sender, EventArgs e)
         {
-            string categoryName = ComboBox_SpendingCategory.SelectedItem.ToString();
-            string expenseName = ComboBox_SpendingExpense.SelectedItem.ToString();
-            string desc = TextBox_SpendingDescription.Text;
-            decimal amount = Numeric_SpendingAmount.Value;
-            int id = _currentBudget.Id;
-            DateTime dt = MonthCalendar_SpendingMonth.SelectionRange.Start;
-
-            if (_budgetHelper.TryAddReceipt(id, categoryName, expenseName, amount, dt, desc, out var error))
-            {
-                ReloadSpendingInfo();
-                ReloadSpendingTable();
-            }
-            else
-            {
-                MessageBox.Show(error, "Failed to add receipt", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            AddReceipt(false);
         }
 
         private void ReloadSpendingInfo()
         {
+            ComboBox_SpendingCategory.ResetText();
+
             ComboBox_SpendingExpense.Enabled = false;
+            ComboBox_SpendingExpense.ResetText();
+
             Numeric_SpendingAmount.Enabled = false;
+            Numeric_SpendingAmount.ResetText();
+
             TextBox_SpendingDescription.Enabled = false;
+            TextBox_SpendingDescription.ResetText();
+
             MonthCalendar_SpendingMonth.Enabled = false;
+            
+            Button_SpendingSubmit.Enabled = false;
+            Button_SetSchedule.Enabled = false;
 
             ComboBox_SpendingExpense.Items.Clear();
         }
@@ -378,7 +412,27 @@ namespace BudgetingForm
 
         private void Button_SetSchedule_Click(object sender, EventArgs e)
         {
+            AddReceipt(true);
+        }
 
+        private void AddReceipt(bool schedule)
+        {
+            string categoryName = ComboBox_SpendingCategory.SelectedItem.ToString();
+            string expenseName = ComboBox_SpendingExpense.SelectedItem.ToString();
+            string desc = TextBox_SpendingDescription.Text;
+            decimal amount = Numeric_SpendingAmount.Value;
+            int id = _currentBudget.Id;
+            DateTime dt = MonthCalendar_SpendingMonth.SelectionRange.Start;
+
+            if (_budgetHelper.TryAddReceipt(id, categoryName, expenseName, amount, dt, desc, schedule, out var error))
+            {
+                ReloadSpendingInfo();
+                ReloadSpendingTable();
+            }
+            else
+            {
+                MessageBox.Show(error, "Failed to add receipt", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

@@ -181,7 +181,7 @@ namespace BudgetingForm
                         }
                     }
 
-                    using (var cmd = dbc.BuildTextCommand("SELECT Id as ExpenseId, ExpenseCategoryId, ExpenseName, Weekly, Monthly, Yearly FROM Expenses"))
+                    using (var cmd = dbc.BuildTextCommand("SELECT Id as ExpenseId, ExpenseCategoryId, ExpenseName FROM Expenses"))
                     using (var rdr = cmd.ExecuteReader())
                     {
                         while (rdr.Read())
@@ -197,7 +197,7 @@ namespace BudgetingForm
                         }
                     }
 
-                    using (var cmd = dbc.BuildTextCommand("SELECT Id as IncomeId, Name as IncomeName, Weekly, Monthly, Yearly FROM Income"))
+                    using (var cmd = dbc.BuildTextCommand("SELECT Id as IncomeId, Name as IncomeName FROM Income"))
                     using (var rdr = cmd.ExecuteReader())
                     {
                         while (rdr.Read())
@@ -267,14 +267,14 @@ namespace BudgetingForm
             return true;
         }
 
-        internal bool TryUpdateIncome(string incomeName, decimal weekly, decimal monthly, decimal yearly, out string error)
+        internal bool TryUpdateIncome(int budgetId, string incomeName, decimal weekly, decimal monthly, decimal yearly, out string error)
         {
             error = string.Empty;
 
             try
             {
                 using (var dbc = DatabaseHelper.GetConnector())
-                using (var cmd = dbc.BuildStoredProcedureCommand("spUpdateIncome", "@incomeName", incomeName, "@weekly", weekly, "@monthly", monthly, "@yearly", yearly))
+                using (var cmd = dbc.BuildStoredProcedureCommand("spUpdateIncome", "@budgetId", budgetId, "@incomeName", incomeName, "@weekly", weekly, "@monthly", monthly, "@yearly", yearly))
                 {
                     cmd.ExecuteNonQuery();
                     _log.Debug($"Successfully updated income [{incomeName}].");
@@ -313,14 +313,14 @@ namespace BudgetingForm
             return true;
         }
 
-        internal bool TryUpdateExpense(string expenseCategoryName, string expenseName, decimal weekly, decimal monthly, decimal yearly, out string error)
+        internal bool TryUpdateExpense(int budgetId, string expenseCategoryName, string expenseName, decimal weekly, decimal monthly, decimal yearly, out string error)
         {
             error = string.Empty;
 
             try
             {
                 using (var dbc = DatabaseHelper.GetConnector())
-                using (var cmd = dbc.BuildStoredProcedureCommand("spUpdateExpense", "@expenseCategoryName", expenseCategoryName, "@expenseName", expenseName, "@weekly", weekly, "@monthly", monthly, "@yearly", yearly))
+                using (var cmd = dbc.BuildStoredProcedureCommand("spUpdateExpense", "@budgetId", budgetId, "@expenseCategoryName", expenseCategoryName, "@expenseName", expenseName, "@weekly", weekly, "@monthly", monthly, "@yearly", yearly))
                 {
                     cmd.ExecuteNonQuery();
                     _log.Debug($"Successfully updated expense [{expenseName}] in category [{expenseCategoryName}].");
@@ -336,7 +336,7 @@ namespace BudgetingForm
             return true;
         }
 
-        internal bool TryAddReceipt(int id, string categoryName, string expenseName, decimal amount, DateTime dt, string desc, out string error, bool schedule = false)
+        internal bool TryAddReceipt(int id, string categoryName, string expenseName, decimal amount, DateTime dt, string desc, bool schedule, out string error)
         {
             error = string.Empty;
 
@@ -352,6 +352,29 @@ namespace BudgetingForm
             catch (Exception ex)
             {
                 error = $"Error while adding receipt for [{expenseName}] in category [{categoryName}]: {ex.Message}";
+                _log.Error(ex, error);
+                return false;
+            }
+
+            return true;
+        }
+
+        internal bool TryAddIncome(int budgetId, string name, out string error)
+        {
+            error = string.Empty;
+
+            try
+            {
+                using (var dbc = DatabaseHelper.GetConnector())
+                using (var cmd = dbc.BuildStoredProcedureCommand("spAddIncome", "@budgetId", budgetId, "@incomeName", name))
+                {
+                    cmd.ExecuteNonQuery();
+                    _log.Debug($"Successfully added income [{name}] to the database.");
+                }
+            }
+            catch (Exception ex)
+            {
+                error = $"Error while adding income [{name}] to the database: {ex.Message}";
                 _log.Error(ex, error);
                 return false;
             }
