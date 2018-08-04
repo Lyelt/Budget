@@ -407,7 +407,10 @@ namespace BudgetingForm
 
         private void ReloadSpendingTable()
         {
-            spendingTableAdapter.Fill(lyeltDataSet.Spending, _currentBudget.Id);
+            if (spendingTableAdapter != null && lyeltDataSet != null)
+                spendingTableAdapter.Fill(lyeltDataSet.Spending, _currentBudget.Id);
+            else
+                MessageBox.Show("Warning", "Spending data table could not be loaded.");
         }
 
         private void Button_SetSchedule_Click(object sender, EventArgs e)

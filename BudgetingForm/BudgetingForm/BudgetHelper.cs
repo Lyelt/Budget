@@ -31,6 +31,8 @@ namespace BudgetingForm
             _log = LogManager.GetLogger<BudgetHelper>();
             _log.AddLogWriter(new LogFileWriter("BudgetHelperWriter", "logs"));
 
+            _log.Debug("Budget helper successfully created.");
+
             ReloadBudgets();
         }
 
