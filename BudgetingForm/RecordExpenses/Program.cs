@@ -15,7 +15,7 @@ namespace RecordExpenses
             DatabaseHelper.DefaultConnectionString = @"Data Source=NICK-HOME-PC;Initial Catalog=Lyelt;Integrated Security=True";
             LogManager.SetDefaults(new LogOptions(appName: "RecordExpenses", verbosity: Enums.LogLevel.Debug));
             var _log = LogManager.GetLogger<Program>();
-            _log.AddLogWriter(new LogFileWriter("RecordExpensesWriter", "logs"));
+            _log.AddLogWriter(new LogFileWriter("RecordExpensesWriter", @"C:\LyeltLogs"));
 
             List<ScheduledTask> tasks = new List<ScheduledTask>();
             try

@@ -27,9 +27,8 @@ namespace BudgetingForm
         public BudgetHelper()
         {
             DatabaseHelper.DefaultConnectionString = @"Data Source=NICK-HOME-PC;Initial Catalog=Lyelt;Integrated Security=True";
-            LogManager.SetDefaults(new LogOptions(appName: "BudgetForm", verbosity: Enums.LogLevel.Debug));
             _log = LogManager.GetLogger<BudgetHelper>();
-            _log.AddLogWriter(new LogFileWriter("BudgetHelperWriter", "logs"));
+            _log.AddLogWriter(new LogFileWriter("BudgetHelperWriter", @"C:\LyeltLogs"));
 
             _log.Debug("Budget helper successfully created.");
 
@@ -154,6 +153,7 @@ namespace BudgetingForm
 
         public void ReloadBudgets()
         {
+            _log.Debug("Loading budgets");
             try
             {
                 _budgets.Clear();
@@ -221,6 +221,7 @@ namespace BudgetingForm
             {
                 _log.Error(ex);
             }
+            _log.Debug("Budgets loaded.");
         }
 
         public bool TryCreateBudget(string name, out string errorMessage)
@@ -382,6 +383,28 @@ namespace BudgetingForm
             }
 
             return true;
+        }
+
+        internal List<Spending> GetMonthlySpending(int budgetId, string categoryName)
+        {
+            List<Spending> spending = new List<Spending>();
+
+            try
+            {
+                using (var dbc = DatabaseHelper.GetConnector())
+                using (var cmd = dbc.BuildStoredProcedureCommand("spGetCurrentMonthlySpending", "@budgetId", budgetId, "@categoryName", categoryName))
+                using (var rdr = cmd.ExecuteReader())
+                {
+                    while (rdr.Read())
+                        spending.Add(Spending.Create(rdr));
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+            }
+
+            return spending;
         }
     }
 }

@@ -1,9 +1,11 @@
-﻿using System;
+﻿using LyeltLogger;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,13 +14,19 @@ namespace BudgetingForm
 {
     public partial class Form1 : Form
     {
-        BudgetHelper _budgetHelper;
-        Budget _currentBudget;
-        List<ExpenseCategory> _expenseCategories;
+        private Random _random = new Random();
+        private BudgetHelper _budgetHelper;
+        private Budget _currentBudget;
+        private List<ExpenseCategory> _expenseCategories;
+        private Logger _log;
 
         public Form1()
         {
             InitializeComponent();
+            LogManager.SetDefaults(new LogOptions(appName: "BudgetForm", verbosity: Enums.LogLevel.Debug));
+            _log = LogManager.GetLogger<Form1>();
+            _log.AddLogWriter(new LogFileWriter("BudgetFormWriter", @"C:\LyeltLogs"));
+
             Scheduler.SetDailyTask();
             this.Numeric_Weekly.TextChanged += new EventHandler(Numeric_Weekly_TextChanged);
             this.Numeric_Monthly.TextChanged += new EventHandler(Numeric_Monthly_TextChanged);
@@ -26,7 +34,9 @@ namespace BudgetingForm
 
             _budgetHelper = new BudgetHelper();
             MenuItem_Open.DropDownItems.AddRange(_budgetHelper.Budgets.Select(b => new ToolStripMenuItem(b.Name)).ToArray());
+            _log.Debug("Loading budget");
             LoadBudget("Nick's Budget");
+            _log.Debug("Loaded budget");
         }
 
         private void LoadBudget(string name, string currentSelectedCategory = null, string currentSelectedExpense = null, string currentSelectedIncome = null)
@@ -405,12 +415,66 @@ namespace BudgetingForm
             ComboBox_SpendingExpense.Items.Clear();
         }
 
+        private void ReloadSpendingGraphics()
+        {
+            //FlowPanel_GraphicalSpending.Controls.Clear();
+            int i = 0;
+            TablePanel_GraphicalSpending.Controls.Clear();
+            foreach (var category in _expenseCategories)
+            {
+                var total = _currentBudget.Expenses.Where(e => e.ExpenseCategoryId == category.Id).Sum(c => c.Monthly);
+                var current = _budgetHelper.GetMonthlySpending(_currentBudget.Id, category.CategoryName).Sum(s => s.Amount);
+
+                var bar = new ProgressBar { Dock = DockStyle.Fill, Style = ProgressBarStyle.Continuous, Height = 10 };
+                var label = new Label { Anchor = AnchorStyles.Left, AutoSize = true, Text = category.CategoryName + $"  (${Math.Round(current, 2)} / ${Math.Round(total, 2)})" };
+
+                bar.Maximum = (int)total;
+
+                if (current > total)
+                {
+                    bar.Value = (int)total;
+
+                    if (Helpers.PercentDifference(current, total) > 5)
+                        ModifyProgressBarColor.SetState(bar, 2);
+                    else
+                        ModifyProgressBarColor.SetState(bar, 3);
+                }
+                else
+                {
+                    bar.Value = (int)current;
+
+                    if (Helpers.PercentDifference(current, total) > 5)
+                        ModifyProgressBarColor.SetState(bar, 1);
+                    else
+                        ModifyProgressBarColor.SetState(bar, 3);
+                }
+
+                 TablePanel_GraphicalSpending.Controls.Add(label, 0, i);
+                TablePanel_GraphicalSpending.Controls.Add(bar, 1, i);
+                i++;
+                //FlowPanel_GraphicalSpending.Controls.Add(label);
+                //FlowPanel_GraphicalSpending.Controls.Add(bar);
+            }
+        }
+
         private void ReloadSpendingTable()
         {
-            if (spendingTableAdapter != null && lyeltDataSet != null)
-                spendingTableAdapter.Fill(lyeltDataSet.Spending, _currentBudget.Id);
-            else
-                MessageBox.Show("Warning", "Spending data table could not be loaded.");
+            ReloadSpendingGraphics();
+            _log.Debug("Filling spending table adapter");
+            try
+            {
+                if (spendingTableAdapter != null && lyeltDataSet != null)
+                {
+                    spendingTableAdapter.Fill(lyeltDataSet.Spending, _currentBudget.Id);
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+            }
+            _log.Information("Spending data table could not be loaded.");
+            MessageBox.Show("Warning", "Spending data table could not be loaded.");   
         }
 
         private void Button_SetSchedule_Click(object sender, EventArgs e)
@@ -436,6 +500,48 @@ namespace BudgetingForm
             {
                 MessageBox.Show(error, "Failed to add receipt", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void Button_Color_Click(object sender, EventArgs e)
+        {
+            ColorRows();
+        }
+
+        private void DataGrid_Spending_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            ColorRows();
+        }
+
+        private void ColorRows()
+        {
+            Dictionary<string, Color> categoryColors = new Dictionary<string, Color>();
+            foreach (DataGridViewRow row in DataGrid_Spending.Rows)
+            {
+                string cat = row.Cells[0].Value.ToString();
+                if (!categoryColors.ContainsKey(cat))
+                {
+                    Color c = Color.FromArgb(_random.Next(256), _random.Next(256), _random.Next(256));
+                    categoryColors[cat] = c;
+                }
+            }
+
+            foreach (DataGridViewRow row in DataGrid_Spending.Rows)
+            {
+                if (categoryColors.TryGetValue(row.Cells[0].Value.ToString(), out Color color))
+                {
+                    row.DefaultCellStyle.BackColor = color;
+                }
+            }
+        }
+    }
+
+    public static class ModifyProgressBarColor
+    {
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
+        static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr w, IntPtr l);
+        public static void SetState(this ProgressBar pBar, int state)
+        {
+            SendMessage(pBar.Handle, 1040, (IntPtr)state, IntPtr.Zero);
         }
     }
 }
