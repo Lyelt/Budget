@@ -48,6 +48,7 @@ namespace BudgetingForm
             _expenseCategories = _budgetHelper.GetExpenseCategories();
 
             ReloadSpendingTable();
+            ReloadScheduled();
 
             ListBox_Expenses.Items.Clear();
 
@@ -79,6 +80,25 @@ namespace BudgetingForm
             {
                 ComboBox_IncomeSources.SelectedIndex = ListBox_Expenses.Items.IndexOf(currentSelectedIncome);
             }
+        }
+
+        private void ReloadScheduled()
+        {
+            _log.Debug("Filling scheduled spending table adapter");
+            try
+            {
+                if (scheduledExpensesTableAdapter != null && lyeltDataSet1 != null)
+                {
+                    scheduledExpensesTableAdapter.Fill(lyeltDataSet1.ScheduledExpenses, _currentBudget.Id);
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+            }
+            _log.Information("Spending data table could not be loaded.");
+            MessageBox.Show("Warning", "Spending data table could not be loaded.");
         }
 
         private void SetDifferenceLabels()
@@ -417,7 +437,6 @@ namespace BudgetingForm
 
         private void ReloadSpendingGraphics()
         {
-            //FlowPanel_GraphicalSpending.Controls.Clear();
             int i = 0;
             TablePanel_GraphicalSpending.Controls.Clear();
             foreach (var category in _expenseCategories)
@@ -426,7 +445,7 @@ namespace BudgetingForm
                 var current = _budgetHelper.GetMonthlySpending(_currentBudget.Id, category.CategoryName).Sum(s => s.Amount);
 
                 var bar = new ProgressBar { Dock = DockStyle.Fill, Style = ProgressBarStyle.Continuous, Height = 10 };
-                var label = new Label { Anchor = AnchorStyles.Left, AutoSize = true, Text = category.CategoryName + $"  (${Math.Round(current, 2)} / ${Math.Round(total, 2)})" };
+                var label = new Label { Anchor = AnchorStyles.Left, AutoSize = true, Text = $"{category.CategoryName, -15}{$"${Math.Round(current, 2)} / {Math.Round(total, 2)}"}" };
 
                 bar.Maximum = (int)total;
 
@@ -449,7 +468,7 @@ namespace BudgetingForm
                         ModifyProgressBarColor.SetState(bar, 3);
                 }
 
-                 TablePanel_GraphicalSpending.Controls.Add(label, 0, i);
+                TablePanel_GraphicalSpending.Controls.Add(label, 0, i);
                 TablePanel_GraphicalSpending.Controls.Add(bar, 1, i);
                 i++;
                 //FlowPanel_GraphicalSpending.Controls.Add(label);
@@ -495,6 +514,7 @@ namespace BudgetingForm
             {
                 ReloadSpendingInfo();
                 ReloadSpendingTable();
+                ReloadScheduled();
             }
             else
             {
@@ -532,6 +552,11 @@ namespace BudgetingForm
                     row.DefaultCellStyle.BackColor = color;
                 }
             }
+        }
+
+        private void Button_Refresh_Click(object sender, EventArgs e)
+        {
+            ReloadBudgetInfo();
         }
     }
 

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,8 +11,11 @@ namespace BudgetingForm
 {
     public static class Scheduler
     {
+        private static bool _createTask = true;//ConfigurationManager.AppSettings.;
         public static void SetDailyTask()
         {
+            if (!_createTask) return;
+
             var log = LyeltLogger.LogManager.GetGlobalLogger();
             try
             {
@@ -21,10 +26,10 @@ namespace BudgetingForm
                         TaskDefinition td = ts.NewTask();
                         td.RegistrationInfo.Description = "Runs daily to determine whether there are any expenses to record";
                         td.Triggers.Add(new DailyTrigger { DaysInterval = 1 });
-                        td.Actions.Add(new ExecAction("RecordExpenses.exe"));
+                        td.Actions.Add(new ExecAction("RecordExpenses.exe", null, Directory.GetCurrentDirectory()));
                         td.Settings.StartWhenAvailable = true;
                         ts.RootFolder.RegisterTaskDefinition("ExpenseTask", td);
-                        log.Information("Adding daily task to run RecordExpenses.exe");
+                        log.Information("Added daily task to run RecordExpenses.exe");
                     }
                     else
                     {
