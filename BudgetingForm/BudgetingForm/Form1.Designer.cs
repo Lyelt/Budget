@@ -77,6 +77,7 @@
             this.Numeric_Yearly = new System.Windows.Forms.NumericUpDown();
             this.Numeric_Monthly = new System.Windows.Forms.NumericUpDown();
             this.TabPage_Spending = new System.Windows.Forms.TabPage();
+            this.DatePicker_Spending = new System.Windows.Forms.DateTimePicker();
             this.TabControl_Spending = new System.Windows.Forms.TabControl();
             this.TabPage_GraphicalView = new System.Windows.Forms.TabPage();
             this.TablePanel_GraphicalSpending = new System.Windows.Forms.TableLayoutPanel();
@@ -672,6 +673,7 @@
             // 
             // TabPage_Spending
             // 
+            this.TabPage_Spending.Controls.Add(this.DatePicker_Spending);
             this.TabPage_Spending.Controls.Add(this.TabControl_Spending);
             this.TabPage_Spending.Location = new System.Drawing.Point(4, 22);
             this.TabPage_Spending.Name = "TabPage_Spending";
@@ -680,14 +682,24 @@
             this.TabPage_Spending.Text = "Spending";
             this.TabPage_Spending.UseVisualStyleBackColor = true;
             // 
+            // DatePicker_Spending
+            // 
+            this.DatePicker_Spending.CustomFormat = "MMMM yyyy";
+            this.DatePicker_Spending.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.DatePicker_Spending.Location = new System.Drawing.Point(238, 21);
+            this.DatePicker_Spending.Name = "DatePicker_Spending";
+            this.DatePicker_Spending.Size = new System.Drawing.Size(200, 20);
+            this.DatePicker_Spending.TabIndex = 1;
+            this.DatePicker_Spending.ValueChanged += new System.EventHandler(this.DatePicker_Spending_ValueChanged);
+            // 
             // TabControl_Spending
             // 
             this.TabControl_Spending.Controls.Add(this.TabPage_GraphicalView);
             this.TabControl_Spending.Controls.Add(this.TabPage_TableView);
-            this.TabControl_Spending.Location = new System.Drawing.Point(18, 15);
+            this.TabControl_Spending.Location = new System.Drawing.Point(18, 47);
             this.TabControl_Spending.Name = "TabControl_Spending";
             this.TabControl_Spending.SelectedIndex = 0;
-            this.TabControl_Spending.Size = new System.Drawing.Size(698, 441);
+            this.TabControl_Spending.Size = new System.Drawing.Size(698, 409);
             this.TabControl_Spending.TabIndex = 0;
             // 
             // TabPage_GraphicalView
@@ -696,7 +708,7 @@
             this.TabPage_GraphicalView.Location = new System.Drawing.Point(4, 22);
             this.TabPage_GraphicalView.Name = "TabPage_GraphicalView";
             this.TabPage_GraphicalView.Padding = new System.Windows.Forms.Padding(3);
-            this.TabPage_GraphicalView.Size = new System.Drawing.Size(690, 415);
+            this.TabPage_GraphicalView.Size = new System.Drawing.Size(690, 383);
             this.TabPage_GraphicalView.TabIndex = 1;
             this.TabPage_GraphicalView.Text = "Graphical View";
             this.TabPage_GraphicalView.UseVisualStyleBackColor = true;
@@ -1708,7 +1720,7 @@
             this.TablePanel_GraphicalSpending.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.TablePanel_GraphicalSpending.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.TablePanel_GraphicalSpending.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.TablePanel_GraphicalSpending.Size = new System.Drawing.Size(726, 403);
+            this.TablePanel_GraphicalSpending.Size = new System.Drawing.Size(688, 377);
             this.TablePanel_GraphicalSpending.TabIndex = 0;
             // 
             // TabPage_TableView
@@ -1717,7 +1729,7 @@
             this.TabPage_TableView.Controls.Add(this.DataGrid_Spending);
             this.TabPage_TableView.Location = new System.Drawing.Point(4, 22);
             this.TabPage_TableView.Name = "TabPage_TableView";
-            this.TabPage_TableView.Size = new System.Drawing.Size(690, 415);
+            this.TabPage_TableView.Size = new System.Drawing.Size(690, 383);
             this.TabPage_TableView.TabIndex = 2;
             this.TabPage_TableView.Text = "Table View";
             this.TabPage_TableView.UseVisualStyleBackColor = true;
@@ -2092,6 +2104,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn amountDataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn descriptionDataGridViewTextBoxColumn1;
         private System.Windows.Forms.Button Button_Refresh;
+        private System.Windows.Forms.DateTimePicker DatePicker_Spending;
     }
 }
 

@@ -27,7 +27,7 @@ namespace BudgetingForm
         public BudgetHelper()
         {
             DatabaseHelper.DefaultConnectionString = @"Data Source=NICK-HOME-PC;Initial Catalog=Lyelt;Integrated Security=True";
-            _log = LogManager.GetLogger<BudgetHelper>();
+            _log = LogManager.GetLogger<BudgetHelper>(new LogOptions(synchronousLogging: true));
             _log.AddLogWriter(new LogFileWriter("BudgetHelperWriter", @"C:\LyeltLogs"));
 
             _log.Debug("Budget helper successfully created.");
@@ -385,14 +385,14 @@ namespace BudgetingForm
             return true;
         }
 
-        internal List<Spending> GetMonthlySpending(int budgetId, string categoryName)
+        internal List<Spending> GetMonthlySpending(int budgetId, string categoryName, DateTime date)
         {
             List<Spending> spending = new List<Spending>();
 
             try
             {
                 using (var dbc = DatabaseHelper.GetConnector())
-                using (var cmd = dbc.BuildStoredProcedureCommand("spGetCurrentMonthlySpending", "@budgetId", budgetId, "@categoryName", categoryName))
+                using (var cmd = dbc.BuildStoredProcedureCommand("spGetCurrentMonthlySpending", "@budgetId", budgetId, "@categoryName", categoryName, "@monthNumber", date.Month, "@year", date.Year))
                 using (var rdr = cmd.ExecuteReader())
                 {
                     while (rdr.Read())

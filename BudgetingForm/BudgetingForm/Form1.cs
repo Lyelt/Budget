@@ -20,6 +20,8 @@ namespace BudgetingForm
         private List<ExpenseCategory> _expenseCategories;
         private Logger _log;
 
+        private DateTime _spendingSelectedDate = DateTime.Today;
+
         public Form1()
         {
             InitializeComponent();
@@ -442,7 +444,7 @@ namespace BudgetingForm
             foreach (var category in _expenseCategories)
             {
                 var total = _currentBudget.Expenses.Where(e => e.ExpenseCategoryId == category.Id).Sum(c => c.Monthly);
-                var current = _budgetHelper.GetMonthlySpending(_currentBudget.Id, category.CategoryName).Sum(s => s.Amount);
+                var current = _budgetHelper.GetMonthlySpending(_currentBudget.Id, category.CategoryName, _spendingSelectedDate).Sum(s => s.Amount);
 
                 var bar = new ProgressBar { Dock = DockStyle.Fill, Style = ProgressBarStyle.Continuous, Height = 10 };
                 var label = new Label { Anchor = AnchorStyles.Left, AutoSize = true, Text = $"{category.CategoryName, -15}{$"${Math.Round(current, 2)} / {Math.Round(total, 2)}"}" };
@@ -524,12 +526,12 @@ namespace BudgetingForm
 
         private void Button_Color_Click(object sender, EventArgs e)
         {
-            ColorRows();
+            //ColorRows();
         }
 
         private void DataGrid_Spending_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
-            ColorRows();
+            //ColorRows();
         }
 
         private void ColorRows()
@@ -557,6 +559,12 @@ namespace BudgetingForm
         private void Button_Refresh_Click(object sender, EventArgs e)
         {
             ReloadBudgetInfo();
+        }
+
+        private void DatePicker_Spending_ValueChanged(object sender, EventArgs e)
+        {
+            _spendingSelectedDate = DatePicker_Spending.Value;
+            ReloadSpendingTable();
         }
     }
 
